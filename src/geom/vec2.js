@@ -66,7 +66,7 @@ export default class Vec2 {
     return diffX * diffX + diffY * diffY;
   }
   distance(target) {
-    return Math.sqrt(this.distanceSquared(target))
+    return Math.sqrt(this.distanceSquared(target));
   }
   setLength(l) {
     return this.multiply(l / this.length());

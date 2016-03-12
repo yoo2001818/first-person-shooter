@@ -1,7 +1,7 @@
 // Action logger; However this doesn't log changes since that would be too
 // costful.
 
-export default function logger(store) {
+export default function logger() {
   return next => action => {
     console.log('%c%s%c %s', 'font-weight: bold; color: #39A63A',
       action.type, '', new Date().toTimeString());

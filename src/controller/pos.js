@@ -12,7 +12,7 @@ const PosController = {
       }
     });
   },
-  SET: (event, store) => {
+  [PosChanges.SET]: (event, store) => {
     const { entity, x, y, write } = event;
     if (write) {
       store.changes.push(ECSChanges.set(entity, 'pos', {
@@ -20,7 +20,7 @@ const PosController = {
       }));
     }
   },
-  ADD: (event, store) => {
+  [PosChanges.ADD]: (event, store) => {
     const { entity, x, y } = event;
     store.changes.push(PosChanges.set(entity,
       entity.pos.x + x, entity.pos.y + y
