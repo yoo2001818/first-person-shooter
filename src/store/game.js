@@ -10,11 +10,10 @@ import { components } from '../util/registerComponent';
 import GeometryController from '../controller/geom';
 import PosController from '../controller/pos';
 
-import RenderSystem from '../system/render';
 import DebugSystem from '../system/debug';
 
 // Configure game store object
-export default function createStore(canvas) {
+export default function createStore() {
   let factory = new StoreFactory();
   // Add controller
   factory.addController('ecs', ECSController);
@@ -22,7 +21,6 @@ export default function createStore(canvas) {
   factory.addController('geom', GeometryController);
   // Add system
   factory.addSystem('family', FamilySystem);
-  factory.addSystem('render', new RenderSystem(canvas));
   factory.addSystem('debug', DebugSystem);
   // Add middleware
   // factory.addMiddleware(logger);

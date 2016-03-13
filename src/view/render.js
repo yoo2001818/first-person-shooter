@@ -1,21 +1,41 @@
 import registerComponent from '../util/registerComponent';
 
-export default class RenderSystem {
-  constructor(canvas) {
+export default class RenderView {
+  constructor(store, canvas) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
-    this.x = 0;
-    this.y = 0;
-  }
-  onMount(store) {
+    this.camera = {
+      x: 0, y: 0
+    };
     this.store = store;
     this.entities = store.systems.family.get(['pos', 'render']).entities;
     store.subscribe('all', this.render.bind(this));
-    store.actions.on('camera/move', action => {
-      const {x, y} = action.payload;
-      this.x += x;
-      this.y += y;
-      this.render();
+  }
+  // :P This isn't React, but still whatever.
+  setupEvents() {
+    let mouseX = 0;
+    let mouseY = 0;
+    const { canvas } = this;
+
+    const handleMouseMove = e => {
+      let diffX = e.clientX - mouseX;
+      let diffY = e.clientY - mouseY;
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      this.camera.x += diffX;
+      this.camera.y += diffY;
+      // Request rerender
+      window.requestAnimationFrame(this.render.bind(this));
+    };
+    canvas.addEventListener('contextmenu', e => e.preventDefault());
+    canvas.addEventListener('mousedown', e => {
+      if (e.button !== 2) return;
+      window.addEventListener('mousemove', handleMouseMove);
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    });
+    window.addEventListener('mouseup', () => {
+      window.removeEventListener('mousemove', handleMouseMove);
     });
   }
   render() {
@@ -24,8 +44,8 @@ export default class RenderSystem {
     for (let i = 0; i < this.entities.length; ++i) {
       let entity = this.entities[i];
       let { x, y } = entity.pos;
-      x = (x + this.x + canvas.width / 2 | 0) + 0.5;
-      y = (y + this.y + canvas.height / 2 | 0) + 0.5;
+      x = (x + this.camera.x + canvas.width / 2 | 0) + 0.5;
+      y = (y + this.camera.y + canvas.height / 2 | 0) + 0.5;
       ctx.strokeStyle = entity.render.color || '#000000';
       ctx.fillStyle = entity.render.color || '#000000';
       switch (entity.geom && entity.geom.type) {
