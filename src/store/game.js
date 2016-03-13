@@ -5,7 +5,7 @@ import FamilySystem from 'ecsalator/lib/ecs/familySystem';
 
 import { components } from '../util/registerComponent';
 
-import logger from '../middleware/logger';
+// import logger from '../middleware/logger';
 
 import GeometryController from '../controller/geom';
 import PosController from '../controller/pos';
@@ -25,7 +25,7 @@ export default function createStore(canvas) {
   factory.addSystem('render', new RenderSystem(canvas));
   factory.addSystem('debug', DebugSystem);
   // Add middleware
-  factory.addMiddleware(logger);
+  // factory.addMiddleware(logger);
   // Set state
   factory.setState(new ECSState(components));
   // Finally set up the state and return object
