@@ -9,8 +9,10 @@ import { components } from '../util/registerComponent';
 
 import GeometryController from '../controller/geom';
 import PosController from '../controller/pos';
+import VelController from '../controller/vel';
 
 import DebugSystem from '../system/debug';
+import VelSystem from '../system/vel';
 
 // Configure game store object
 export default function createStore() {
@@ -19,9 +21,11 @@ export default function createStore() {
   factory.addController('ecs', ECSController);
   factory.addController('pos', PosController);
   factory.addController('geom', GeometryController);
+  factory.addController('vel', VelController);
   // Add system
   factory.addSystem('family', FamilySystem);
   factory.addSystem('debug', DebugSystem);
+  factory.addSystem('vel', VelSystem);
   // Add middleware
   // factory.addMiddleware(logger);
   // Set state

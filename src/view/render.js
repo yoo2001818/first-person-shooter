@@ -25,7 +25,7 @@ export default class RenderView {
       this.camera.x += diffX;
       this.camera.y += diffY;
       // Request rerender
-      window.requestAnimationFrame(this.render.bind(this));
+      // window.requestAnimationFrame(this.render.bind(this));
     };
     canvas.addEventListener('contextmenu', e => e.preventDefault());
     canvas.addEventListener('mousedown', e => {
@@ -41,6 +41,14 @@ export default class RenderView {
   render() {
     const { ctx, canvas } = this;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // Draw grids
+    ctx.strokeStyle = '#000000';
+    ctx.beginPath();
+    ctx.moveTo(0.5, this.camera.y + canvas.height / 2 + 0.5);
+    ctx.lineTo(canvas.width + 0.5, this.camera.y + canvas.height / 2 + 0.5);
+    ctx.moveTo(this.camera.x + canvas.width / 2 + 0.5, 0.5);
+    ctx.lineTo(this.camera.x + canvas.width / 2 + 0.5, canvas.height + 0.5);
+    ctx.stroke();
     for (let i = 0; i < this.entities.length; ++i) {
       let entity = this.entities[i];
       let { x, y } = entity.pos;

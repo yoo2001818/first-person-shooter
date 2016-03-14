@@ -13,6 +13,15 @@ let view = new RenderView(store, canvas);
 view.setupEvents();
 
 store.dispatch({
-  type: 'engine/update'
+  type: 'engine/init'
 });
+
+function update() {
+  store.dispatch({
+    type: 'engine/update'
+  });
+  view.render();
+  window.requestAnimationFrame(update);
+}
+update();
 console.log(store);
