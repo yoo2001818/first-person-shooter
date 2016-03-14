@@ -1,5 +1,3 @@
-import registerComponent from '../util/registerComponent';
-
 export default class RenderView {
   constructor(store, canvas) {
     this.canvas = canvas;
@@ -82,5 +80,3 @@ export default class RenderView {
     }
   }
 }
-
-registerComponent('render');

@@ -3,8 +3,6 @@ import ECSState from 'ecsalator/lib/ecs/state';
 import ECSController from 'ecsalator/lib/ecs/controller';
 import FamilySystem from 'ecsalator/lib/ecs/familySystem';
 
-import { components } from '../util/registerComponent';
-
 // import logger from '../middleware/logger';
 
 import GeometryController from '../controller/geom';
@@ -13,6 +11,7 @@ import VelController from '../controller/vel';
 
 import DebugSystem from '../system/debug';
 import VelSystem from '../system/vel';
+import CollisionSystem from '../system/collision';
 
 // Configure game store object
 export default function createStore() {
@@ -26,10 +25,11 @@ export default function createStore() {
   factory.addSystem('family', FamilySystem);
   factory.addSystem('debug', DebugSystem);
   factory.addSystem('vel', VelSystem);
+  factory.addSystem('collision', CollisionSystem);
   // Add middleware
   // factory.addMiddleware(logger);
   // Set state
-  factory.setState(new ECSState(components));
+  factory.setState(new ECSState(['pos', 'geom', 'vel', 'collision', 'render']));
   // Finally set up the state and return object
   return factory.create();
 }

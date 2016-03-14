@@ -1,5 +1,3 @@
-import registerComponent from '../util/registerComponent';
-
 import * as engineActions from '../action/engine';
 import * as ECSChanges from 'ecsalator/lib/ecs/changes';
 
@@ -10,10 +8,13 @@ export default class DebugSystem {
     store.actions.on(engineActions.INIT, () => {
       store.changes.push(ECSChanges.entityCreate(undefined, {
         pos: {
-          x: 100, y: 100
+          x: 100, y: 50
         },
         vel: {
-          x: 0, y: 0.5
+          x: 0, y: 1
+        },
+        collision: {
+
         },
         geom: {
           type: 'rect', width: 100, height: 100
@@ -26,6 +27,9 @@ export default class DebugSystem {
         pos: {
           x: 100, y: 200
         },
+        collision: {
+
+        },
         geom: {
           type: 'line', width: 300, height: 100
         },
@@ -36,5 +40,3 @@ export default class DebugSystem {
     });
   }
 }
-
-registerComponent('render');

@@ -1,5 +1,3 @@
-import registerComponent from '../util/registerComponent';
-
 import * as ECSChanges from 'ecsalator/lib/ecs/changes';
 import * as GeomChanges from '../change/geom';
 
@@ -19,7 +17,5 @@ const GeometryController = {
     }
   }
 };
-
-registerComponent('geom');
 
 export default GeometryController;
