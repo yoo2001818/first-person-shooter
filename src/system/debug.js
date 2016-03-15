@@ -11,7 +11,7 @@ export default class DebugSystem {
           x: 100, y: 50
         },
         vel: {
-          x: 0, y: 1
+          x: 1, y: 1
         },
         collision: {
 
@@ -23,7 +23,7 @@ export default class DebugSystem {
           color: '#000'
         }
       }));
-      store.changes.push(ECSChanges.entityCreate(undefined, {
+      /*store.changes.push(ECSChanges.entityCreate(undefined, {
         pos: {
           x: 100, y: 200
         },
@@ -31,7 +31,21 @@ export default class DebugSystem {
 
         },
         geom: {
-          type: 'line', width: 300, height: 100
+          type: 'line', width: 300, height: 0
+        },
+        render: {
+          color: '#f00'
+        }
+      }));*/
+      store.changes.push(ECSChanges.entityCreate(undefined, {
+        pos: {
+          x: 200, y: 100
+        },
+        collision: {
+
+        },
+        geom: {
+          type: 'line', width: 100, height: 300
         },
         render: {
           color: '#f00'
