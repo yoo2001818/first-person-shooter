@@ -11,7 +11,7 @@ export default class DebugSystem {
           x: 100, y: 50
         },
         vel: {
-          x: 1, y: 1
+          x: 1, y: 0
         },
         collision: {
 

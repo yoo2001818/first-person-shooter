@@ -13,10 +13,8 @@ function handleLineRect(x1, y1, x2, y2, x3, y3, x4, y4) {
     if (p1 && p2) {
       let x = i % 2 ? p2.x - p1.x : p1.x - p2.x;
       let y = i % 2 ? p1.y - p2.y : p2.y - p1.y;
-      let xBig = Math.abs(x) > Math.abs(y);
       return {
-        x: xBig ? 0 : x,
-        y: xBig ? y : 0
+        x, y
       };
     }
   }
@@ -66,6 +64,19 @@ function handleLineRect2(line, rect, store) {
   let result = handleLineRect(x1, y1, x2, y2, x3, y3, x4, y4);
   if (!result) return;
   if (result.x === 0 && result.y === 0) return;
+  if (rect.vel) {
+    // Move along with the axis
+    let x = result.x / 2 + rect.vel.x;
+    let y = result.y / 2 + rect.vel.y;
+    x = x * Math.sqrt(rect.vel.x * rect.vel.x + rect.vel.y * rect.vel.y) /
+      Math.sqrt(x * x + y * y);
+    y = y * Math.sqrt(rect.vel.x * rect.vel.x + rect.vel.y * rect.vel.y) /
+      Math.sqrt(x * x + y * y);
+    x -= rect.vel.x;
+    y -= rect.vel.y;
+    store.changes.push(PosChanges.add(rect, x, y));
+    return;
+  }
   store.changes.push(PosChanges.add(rect, result.x / 2, result.y / 2));
 }
 
