@@ -9,6 +9,10 @@ const PosController = {
       translate, scale, type
     }));
   },
+  [PosChanges.SET_POS]: (event) => {
+    const { entity, vec } = event.data;
+    Vector.copy(vec, entity.pos.translate);
+  },
   [PosChanges.TRANSLATE]: (event, store) => {
     const { entity, vec } = event.data;
     /*

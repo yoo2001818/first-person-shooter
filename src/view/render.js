@@ -37,6 +37,15 @@ export default class RenderView {
     window.addEventListener('mouseup', () => {
       window.removeEventListener('mousemove', handleMouseMove);
     });
+    canvas.addEventListener('mousemove', e => {
+      this.store.dispatch({
+        type: 'cursor/move',
+        payload: {
+          x: e.clientX - this.camera.x - canvas.width / 2,
+          y: e.clientY - this.camera.y - canvas.height / 2
+        }
+      });
+    });
   }
   render() {
     const { ctx, canvas } = this;

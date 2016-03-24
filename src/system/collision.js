@@ -1,5 +1,5 @@
 import * as engineActions from '../action/engine';
-import * as PosChanges from '../change/pos';
+import * as posChanges from '../change/pos';
 //import * as ECSChanges from 'ecsalator/lib/ecs/changes';
 import { Rect, Vector } from 'kollision';
 import * as GeometryType from '../util/geometryType';
@@ -39,16 +39,37 @@ function lineRect(line, rect, store) {
   if (!Rect.intersectsLine(rectGeom, lineGeom, vec1, vec2, vec3)) return;
   //console.log(inspectVec(vec1), inspectVec(vec2), inspectVec(vec3));
   addDebugSymbol(vec1, store);
-  addDebugSymbol(Vector.add(vec1, vec2, vec3), store);
-  vec2[0] = -vec2[0];
+  // addDebugSymbol(Vector.add(vec1, vec2, vec3), store);
+  if (vec3[1] == 1) vec2[0] = -vec2[0];
+  if (vec3[0] == 1) vec2[1] = -vec2[1];
   Vector.multiply(vec2, 0.5, vec2);
-  store.changes.push(PosChanges.translate(rect, vec2));
+  store.changes.push(posChanges.translate(rect, vec2, true));
 }
 
 export default class CollisionSystem {
   onMount(store) {
     this.store = store;
     this.entities = store.systems.family.get(['collision', 'pos']).entities;
+    store.actions.on(engineActions.UPDATE, () => {
+      this.store.state.globals.debug = [];
+    });
+    store.changes.on(posChanges.TRANSLATE, event => {
+      if (event.data.collision) return;
+      const { entity } = event.data;
+      for (let i = 0; i < this.entities.length; ++i) {
+        let target = this.entities[i];
+        if (entity === target) continue;
+        let collisionType = entity.pos.type + target.pos.type;
+        let bigger = entity.pos.type > target.pos.type;
+        // Type check...
+        switch (collisionType) {
+        case GeometryType.RECT | GeometryType.LINE:
+          lineRect(bigger ? entity : target, bigger ? target : entity, store);
+          break;
+        }
+      }
+    });
+    /*
     store.actions.on(engineActions.UPDATE, () => {
       // TODO Debug code; should be removed
       this.store.state.globals.debug = [];
@@ -67,5 +88,6 @@ export default class CollisionSystem {
         }
       }
     });
+    */
   }
 }

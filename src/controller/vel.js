@@ -1,20 +1,16 @@
 import * as ECSChanges from 'ecsalator/lib/ecs/changes';
 import * as VelChanges from '../change/vel';
+import { Vector } from 'kollision';
 
 const VelController = {
   [VelChanges.SET]: (event, store) => {
-    const { entity, x, y, write } = event.data;
-    if (write) {
-      store.changes.unshift(ECSChanges.set(entity, 'vel', {
-        x, y
-      }));
-    }
+    const { entity, vec } = event.data;
+    Vector.copy(vec, entity.vel);
+    store.changes.unshift(ECSChanges.set(entity, 'vel', vec));
   },
-  [VelChanges.ADD]: (event, store) => {
-    const { entity, x, y } = event.data;
-    store.changes.unshift(VelChanges.set(entity,
-      entity.pos.x + x, entity.pos.y + y
-    ));
+  [VelChanges.ADD]: (event) => {
+    const { entity, vec } = event.data;
+    Vector.add(entity.vel, vec, entity.vel);
   }
 };
 

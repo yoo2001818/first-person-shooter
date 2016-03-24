@@ -11,6 +11,7 @@ import VelController from '../controller/vel';
 import DebugSystem from '../system/debug';
 import VelSystem from '../system/vel';
 import CollisionSystem from '../system/collision';
+import CursorSystem from '../system/cursor';
 
 // Configure game store object
 export default function createStore() {
@@ -24,10 +25,13 @@ export default function createStore() {
   factory.addSystem('debug', DebugSystem);
   factory.addSystem('vel', VelSystem);
   factory.addSystem('collision', CollisionSystem);
+  factory.addSystem('cursor', CursorSystem);
   // Add middleware
   // factory.addMiddleware(logger);
   // Set state
-  factory.setState(new ECSState(['pos', 'vel', 'collision', 'render']));
+  factory.setState(new ECSState([
+    'pos', 'vel', 'collision', 'render', 'cursor'
+  ]));
   // Finally set up the state and return object
   return factory.create();
 }

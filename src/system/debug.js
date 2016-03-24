@@ -20,7 +20,8 @@ export default class DebugSystem {
         },
         render: {
           color: '#000'
-        }
+        },
+        cursor: {}
       }));
       /*store.changes.push(ECSChanges.entityCreate(undefined, {
         pos: {
@@ -39,14 +40,27 @@ export default class DebugSystem {
       store.changes.push(ECSChanges.entityCreate(undefined, {
         pos: {
           translate: Vector.create(200, 10),
-          scale: Vector.create(100, 200),
+          scale: Vector.create(200, 100),
           type: GeometryType.LINE
         },
         collision: {
 
         },
         render: {
-          color: '#f00'
+          color: '#00f'
+        }
+      }));
+      store.changes.push(ECSChanges.entityCreate(undefined, {
+        pos: {
+          translate: Vector.create(100, -290),
+          scale: Vector.create(-100, 200),
+          type: GeometryType.LINE
+        },
+        collision: {
+
+        },
+        render: {
+          color: '#00f'
         }
       }));
     });
