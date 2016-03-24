@@ -1,5 +1,7 @@
 import * as engineActions from '../action/engine';
 import * as ECSChanges from 'ecsalator/lib/ecs/changes';
+import * as GeometryType from '../util/geometryType';
+import { Vector } from 'kollision';
 
 // A system doing various testing chores.
 export default class DebugSystem {
@@ -8,16 +10,13 @@ export default class DebugSystem {
     store.actions.on(engineActions.INIT, () => {
       store.changes.push(ECSChanges.entityCreate(undefined, {
         pos: {
-          x: 100, y: 50
+          translate: Vector.create(100, 50),
+          scale: Vector.create(50, 50),
+          type: GeometryType.RECT
         },
-        vel: {
-          x: 1, y: 0
-        },
+        vel: Vector.create(1, 0),
         collision: {
 
-        },
-        geom: {
-          type: 'rect', width: 100, height: 100
         },
         render: {
           color: '#000'
@@ -39,13 +38,12 @@ export default class DebugSystem {
       }));*/
       store.changes.push(ECSChanges.entityCreate(undefined, {
         pos: {
-          x: 200, y: 100
+          translate: Vector.create(200, 10),
+          scale: Vector.create(100, 200),
+          type: GeometryType.LINE
         },
         collision: {
 
-        },
-        geom: {
-          type: 'line', width: 100, height: 300
         },
         render: {
           color: '#f00'

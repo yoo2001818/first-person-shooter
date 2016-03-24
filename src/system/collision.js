@@ -1,83 +1,48 @@
 import * as engineActions from '../action/engine';
 import * as PosChanges from '../change/pos';
-// import * as ECSChanges from 'ecsalator/lib/ecs/changes';
-import * as Collision from '../geom/collision';
+//import * as ECSChanges from 'ecsalator/lib/ecs/changes';
+import { Rect, Vector } from 'kollision';
+import * as GeometryType from '../util/geometryType';
 
-function handleLineRect(x1, y1, x2, y2, x3, y3, x4, y4) {
-  let points = Collision.lineRect(x1, y1, x2, y2, x3, y3, x4, y4);
-  if (!points) return null;
-  // 2 intersections test
-  for (let i = 0; i < 4; ++i) {
-    let p1 = points[i];
-    let p2 = points[(i + 1) % 4];
-    if (p1 && p2) {
-      let x = i % 2 ? p2.x - p1.x : p1.x - p2.x;
-      let y = i % 2 ? p1.y - p2.y : p2.y - p1.y;
-      return {
-        x, y
-      };
-    }
-  }
-  // 3 intersections test... Currently not done
-  if (points[0] && points[2]) {
-    let p1 = points[0];
-    let p2 = points[2];
-    let pMid = (p1.x + p2.x) / 2;
-    let xMid = (x3 + x4) / 2;
-    let x;
-    if (xMid < pMid) {
-      x = Math.max(p1.x, p2.x) - Math.max(x3, x4);
-    } else {
-      x = Math.min(p1.x, p2.x) - Math.min(x3, x4);
-    }
-    return {
-      x, y: 0
-    };
-  }
-  if (points[1] && points[3]) {
-    let p1 = points[1];
-    let p2 = points[3];
-    let pMid = (p1.y + p2.y) / 2;
-    let yMid = (y3 + y4) / 2;
-    let y;
-    if (yMid < pMid) {
-      y = Math.max(p1.y, p2.y) - Math.max(y3, y4);
-    } else {
-      y = Math.min(p1.y, p2.y) - Math.min(y3, y4);
-    }
-    return {
-      x: 0, y
-    };
-  }
-  return null;
+// Pre-built array for allocation
+
+let buffer1 = new Float32Array(4);
+let buffer2 = new Float32Array(4);
+let vec1 = new Float32Array(2);
+let vec2 = new Float32Array(2);
+let vec3 = new Float32Array(2);
+
+function inspectVec(vec) {
+  return `(${vec[0].toFixed(2)}, ${vec[1].toFixed(2)})`;
 }
 
-function handleLineRect2(line, rect, store) {
-  let x1 = line.pos.x - line.geom.width / 2;
-  let x2 = line.pos.x + line.geom.width / 2;
-  let x3 = rect.pos.x - rect.geom.width / 2;
-  let x4 = rect.pos.x + rect.geom.width / 2;
-  let y1 = line.pos.y - line.geom.height / 2;
-  let y2 = line.pos.y + line.geom.height / 2;
-  let y3 = rect.pos.y - rect.geom.height / 2;
-  let y4 = rect.pos.y + rect.geom.height / 2;
-  let result = handleLineRect(x1, y1, x2, y2, x3, y3, x4, y4);
-  if (!result) return;
-  if (result.x === 0 && result.y === 0) return;
-  if (rect.vel) {
-    // Move along with the axis
-    let x = result.x / 2 + rect.vel.x;
-    let y = result.y / 2 + rect.vel.y;
-    x = x * Math.sqrt(rect.vel.x * rect.vel.x + rect.vel.y * rect.vel.y) /
-      Math.sqrt(x * x + y * y);
-    y = y * Math.sqrt(rect.vel.x * rect.vel.x + rect.vel.y * rect.vel.y) /
-      Math.sqrt(x * x + y * y);
-    x -= rect.vel.x;
-    y -= rect.vel.y;
-    store.changes.push(PosChanges.add(rect, x, y));
-    return;
-  }
-  store.changes.push(PosChanges.add(rect, result.x / 2, result.y / 2));
+// Build geometry object from pos object
+function buildGeom(data, dest) {
+  dest[0] = data.translate[0] - data.scale[0];
+  dest[1] = data.translate[1] - data.scale[1];
+  dest[2] = data.translate[0] + data.scale[0];
+  dest[3] = data.translate[1] + data.scale[1];
+  return dest;
+}
+
+// TODO Test code, should be refactored
+function addDebugSymbol(vec, store) {
+  if (store.state.globals.debug == null) store.state.globals.debug = [];
+  store.state.globals.debug.push({
+    x: vec[0], y: vec[1]
+  });
+}
+
+function lineRect(line, rect, store) {
+  let lineGeom = buildGeom(line.pos, buffer1);
+  let rectGeom = buildGeom(rect.pos, buffer2);
+  if (!Rect.intersectsLine(rectGeom, lineGeom, vec1, vec2, vec3)) return;
+  //console.log(inspectVec(vec1), inspectVec(vec2), inspectVec(vec3));
+  addDebugSymbol(vec1, store);
+  addDebugSymbol(Vector.add(vec1, vec2, vec3), store);
+  vec2[0] = -vec2[0];
+  Vector.multiply(vec2, 0.5, vec2);
+  store.changes.push(PosChanges.translate(rect, vec2));
 }
 
 export default class CollisionSystem {
@@ -85,15 +50,19 @@ export default class CollisionSystem {
     this.store = store;
     this.entities = store.systems.family.get(['collision', 'pos']).entities;
     store.actions.on(engineActions.UPDATE, () => {
+      // TODO Debug code; should be removed
+      this.store.state.globals.debug = [];
       for (let i = 0; i < this.entities.length; ++i) {
         let entity = this.entities[i];
         for (let j = 0; j < i; ++j) {
           let target = this.entities[j];
-          if (entity.geom.type === 'line' && target.geom.type === 'rect') {
-            handleLineRect2(entity, target, store);
-          }
-          if (entity.geom.type === 'rect' && target.geom.type === 'line') {
-            handleLineRect2(target, entity, store);
+          let collisionType = entity.pos.type + target.pos.type;
+          let bigger = entity.pos.type > target.pos.type;
+          // Type check...
+          switch (collisionType) {
+          case GeometryType.RECT | GeometryType.LINE:
+            lineRect(bigger ? entity : target, bigger ? target : entity, store);
+            break;
           }
         }
       }

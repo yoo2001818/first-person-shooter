@@ -2,14 +2,6 @@ import * as ECSChanges from 'ecsalator/lib/ecs/changes';
 import * as VelChanges from '../change/vel';
 
 const VelController = {
-  onMount: store => {
-    store.changes.on(ECSChanges.SET, event => {
-      const { entity, key, value: {x, y} } = event.data;
-      if (key === 'vel') {
-        store.changes.unshift(VelChanges.set(entity, x, y, 0, false));
-      }
-    });
-  },
   [VelChanges.SET]: (event, store) => {
     const { entity, x, y, write } = event.data;
     if (write) {

@@ -9,7 +9,7 @@ export default class VelocitySystem {
     store.actions.on(engineActions.UPDATE, () => {
       for (let i = 0; i < this.entities.length; ++i) {
         let entity = this.entities[i];
-        store.changes.push(PosChanges.add(entity, entity.vel.x, entity.vel.y));
+        store.changes.push(PosChanges.translate(entity, entity.vel));
       }
     });
   }

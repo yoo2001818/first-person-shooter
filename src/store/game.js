@@ -5,7 +5,6 @@ import FamilySystem from 'ecsalator/lib/ecs/familySystem';
 
 // import logger from '../middleware/logger';
 
-import GeometryController from '../controller/geom';
 import PosController from '../controller/pos';
 import VelController from '../controller/vel';
 
@@ -19,7 +18,6 @@ export default function createStore() {
   // Add controller
   factory.addController('ecs', ECSController);
   factory.addController('pos', PosController);
-  factory.addController('geom', GeometryController);
   factory.addController('vel', VelController);
   // Add system
   factory.addSystem('family', FamilySystem);
@@ -29,7 +27,7 @@ export default function createStore() {
   // Add middleware
   // factory.addMiddleware(logger);
   // Set state
-  factory.setState(new ECSState(['pos', 'geom', 'vel', 'collision', 'render']));
+  factory.setState(new ECSState(['pos', 'vel', 'collision', 'render']));
   // Finally set up the state and return object
   return factory.create();
 }

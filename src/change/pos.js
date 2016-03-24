@@ -3,12 +3,16 @@ import createChange from 'ecsalator/lib/util/createChange';
 // This should be 3-dimensional at the end, however I don't really
 // understand vectors and stuff - I'll try it after making 3D renderer.
 
-export const ADD = 'pos/addPos';
-export const SET = 'pos/setPos';
+export const TRANSLATE = 'pos/translate';
+export const SET_POS = 'pos/setPos';
+export const SET = 'pos/set';
 
-export const add = createChange(ADD, (entity, x, y) => ({
+export const translate = createChange(TRANSLATE, (entity, vec) => ({
+  entity, vec
+}));
+export const setPos = createChange(SET_POS, (entity, x, y) => ({
   entity, x, y
 }));
-export const set = createChange(SET, (entity, x, y, _, write = true) => ({
-  entity, x, y, write
+export const set = createChange(SET, (entity, translate, scale, type) => ({
+  entity, translate, scale, type
 }));

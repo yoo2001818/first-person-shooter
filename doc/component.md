@@ -12,15 +12,7 @@ It stores two Vectors, one for position, and one for width / height.
 - scale: Vector2D - Stores half the size of the entity, Which is
 `sqrt(2) * radius`, `(radius, radius)` for a circle.
 - rotation: Number - Probably won't be implemented.
-
-## geometry
-Geometry component. Stores the shape of the entity, which can be one of the
-following:
-
-- point
-- circle
-- rectangle
-- line
+- type: Enum - Type of the geometry object.  
 
 ## collision
 Collision component. Makes the component colide with other entities.

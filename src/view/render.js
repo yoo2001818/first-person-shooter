@@ -1,3 +1,5 @@
+import * as GeometryType from '../util/geometryType';
+
 export default class RenderView {
   constructor(store, canvas) {
     this.canvas = canvas;
@@ -49,34 +51,51 @@ export default class RenderView {
     ctx.stroke();
     for (let i = 0; i < this.entities.length; ++i) {
       let entity = this.entities[i];
-      let { x, y } = entity.pos;
+      let [x, y] = entity.pos.translate;
+      let [width, height] = entity.pos.scale;
       x = (x + this.camera.x + canvas.width / 2 | 0) + 0.5;
       y = (y + this.camera.y + canvas.height / 2 | 0) + 0.5;
       ctx.strokeStyle = entity.render.color || '#000000';
       ctx.fillStyle = entity.render.color || '#000000';
-      switch (entity.geom && entity.geom.type) {
-      case 'rect':
-        ctx.strokeRect(x - entity.geom.width / 2, y - entity.geom.height / 2,
-          entity.geom.width, entity.geom.height);
+      switch (entity.pos.type) {
+      case GeometryType.RECT:
+        ctx.strokeRect(x - width, y - height,
+          width * 2, height * 2);
         break;
-      case 'line':
+      case GeometryType.LINE:
         ctx.beginPath();
-        ctx.moveTo(x - entity.geom.width / 2, y - entity.geom.height / 2);
-        ctx.lineTo(x + entity.geom.width / 2, y + entity.geom.height / 2);
+        ctx.moveTo(x - width, y - height);
+        ctx.lineTo(x + width, y + height);
         ctx.stroke();
         break;
-      case 'circle':
+      case GeometryType.CIRCLE:
         ctx.beginPath();
-        ctx.arc(x, y, entity.geom.radius, 0, Math.PI * 2);
+        ctx.arc(x, y, width, 0, Math.PI * 2);
         ctx.stroke();
         break;
-      case 'point':
+      case GeometryType.POINT:
       default:
         ctx.beginPath();
         ctx.arc(x, y, 2, 0, Math.PI * 2);
         ctx.fill();
         break;
       }
+    }
+    ctx.fillStyle = '#ff0000';
+    ctx.strokeStyle = '#ff0000';
+    if (this.store.state.globals.debug != null) {
+      this.store.state.globals.debug.forEach(v => {
+        let x = this.camera.x + canvas.width / 2 + v.x - 2 | 0;
+        let y = this.camera.y + canvas.height / 2 + v.y - 2 | 0;
+        if (v.vector) {
+          ctx.beginPath();
+          ctx.moveTo(x + 0.5, y + 0.5);
+          ctx.lineTo((x + v.vx * 30 | 0) + 0.5, (y + v.vy * 30 | 0) + 0.5);
+          ctx.stroke();
+        } else {
+          ctx.fillRect(x, y, 4, 4);
+        }
+      });
     }
   }
 }

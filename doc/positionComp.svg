@@ -15,7 +15,10 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.91 r13725"
-   sodipodi:docname="positionComp.svg">
+   sodipodi:docname="positionComp.svg"
+   inkscape:export-filename="/home/yoo2001818/git/first-person-shooter/doc/positionComp.png"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90">
   <defs
      id="defs4">
     <marker
@@ -41,9 +44,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="3.959798"
-     inkscape:cx="136.87739"
-     inkscape:cy="94.614954"
+     inkscape:zoom="1.979899"
+     inkscape:cx="27.001843"
+     inkscape:cy="127.68961"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
