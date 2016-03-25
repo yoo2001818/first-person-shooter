@@ -23,20 +23,19 @@ export default class DebugSystem {
         },
         cursor: {}
       }));
-      /*store.changes.push(ECSChanges.entityCreate(undefined, {
+      store.changes.push(ECSChanges.entityCreate(undefined, {
         pos: {
-          x: 100, y: 200
+          translate: Vector.create(-100, 10),
+          scale: Vector.create(100, 0),
+          type: GeometryType.LINE
         },
         collision: {
 
         },
-        geom: {
-          type: 'line', width: 300, height: 0
-        },
         render: {
-          color: '#f00'
+          color: '#00f'
         }
-      }));*/
+      }));
       store.changes.push(ECSChanges.entityCreate(undefined, {
         pos: {
           translate: Vector.create(200, 10),

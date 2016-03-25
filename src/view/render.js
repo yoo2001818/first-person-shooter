@@ -99,8 +99,12 @@ export default class RenderView {
         if (v.vector) {
           ctx.beginPath();
           ctx.moveTo(x + 0.5, y + 0.5);
-          ctx.lineTo((x + v.vx * 30 | 0) + 0.5, (y + v.vy * 30 | 0) + 0.5);
+          ctx.lineTo((x + v.vx | 0) + 0.5, (y + v.vy | 0) + 0.5);
           ctx.stroke();
+        } else if (v.rect) {
+          ctx.strokeStyle = '#0000ff';
+          ctx.strokeRect(x + 1.5, y + 1.5, v.vx - 2 | 0, v.vy - 2 | 0);
+          ctx.strokeStyle = '#ff0000';
         } else {
           ctx.fillRect(x, y, 4, 4);
         }
