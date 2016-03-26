@@ -60,8 +60,10 @@ export default class RenderView {
     ctx.stroke();
     for (let i = 0; i < this.entities.length; ++i) {
       let entity = this.entities[i];
-      let [x, y] = entity.pos.translate;
-      let [width, height] = entity.pos.scale;
+      let x = entity.pos.translate[0];
+      let y = entity.pos.translate[1];
+      let width = entity.pos.scale[0];
+      let height = entity.pos.scale[1];
       x = (x + this.camera.x + canvas.width / 2 | 0) + 0.5;
       y = (y + this.camera.y + canvas.height / 2 | 0) + 0.5;
       ctx.strokeStyle = entity.render.color || '#000000';
