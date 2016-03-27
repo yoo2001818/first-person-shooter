@@ -25,8 +25,21 @@ export default class DebugSystem {
       }));
       store.changes.push(ECSChanges.entityCreate(undefined, {
         pos: {
-          translate: Vector.create(-100, 10),
+          translate: Vector.create(-100, 100),
           scale: Vector.create(100, 0),
+          type: GeometryType.LINE
+        },
+        collision: {
+
+        },
+        render: {
+          color: '#00f'
+        }
+      }));
+      store.changes.push(ECSChanges.entityCreate(undefined, {
+        pos: {
+          translate: Vector.create(-200, -100),
+          scale: Vector.create(0, 100),
           type: GeometryType.LINE
         },
         collision: {

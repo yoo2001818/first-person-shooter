@@ -37,6 +37,14 @@ function addDebugSymbol(vec, store) {
   });
 }
 
+function addDebugLine(vec, vec2, store) {
+  store.state.globals.debug.push({
+    vector: true,
+    x: vec[0], y: vec[1],
+    vx: vec2[0] - vec[0], vy: vec2[1] - vec[1]
+  });
+}
+
 function lineRect(line, rect, store) {
   let lineGeom = buildGeom(line.pos, buffer1);
   let rectGeom = buildGeom(rect.pos, buffer2);
@@ -56,16 +64,24 @@ function lineRect(line, rect, store) {
     // Scenario 1: Two collided edges are perpendicular to each other
     vec2[0] = -0.5 * (vec3[0] + vec4[0]) * Math.abs(vec2[0]);
     vec2[1] = -0.5 * (vec3[1] + vec4[1]) * Math.abs(vec2[1]);
-  } else if (Vector.dot(vec3, vec4) !== 0) {
+  } else if (Vector.dot(vec3, vec4) !== 0 ||
+    Vector.lengthTaxi(vec2) * 3 >
+    Math.max(Rect.width(rectGeom), Rect.height(rectGeom))
+  ) {
     // Scenario 2: Two collided edges are parallel to each other
     // Select two vertexs that doesn't 'meet' with the line
-    let deltaDir = vec3[0] * vec3[1];
-    vec5[0] = deltaDir > 0 ? rectGeom[2] : rectGeom[0];
+    let deltaDir = vec2[0] * vec2[1];
+    let deltaVert = vec2[0] < vec2[1];
+    vec5[0] = (deltaDir > 0) ? rectGeom[2] : rectGeom[0];
     vec5[1] = rectGeom[1];
-    vec6[0] = deltaDir > 0 ? rectGeom[0] : rectGeom[2];
+    vec6[0] = (deltaDir > 0) ? rectGeom[0] : rectGeom[2];
     vec6[1] = rectGeom[3];
+    addDebugSymbol(vec5, store);
+    addDebugSymbol(vec6, store);
     // Then calculate distance of each other from the delta center
     Vector.add(vec2, vec1, vec2);
+    addDebugLine(vec5, vec1, store);
+    addDebugLine(vec6, vec2, store);
     let l1 = Vector.distanceSquared(vec5, vec1);
     let l2 = Vector.distanceSquared(vec6, vec2);
     if (l1 < l2) {
@@ -85,6 +101,7 @@ function lineRect(line, rect, store) {
     // Vector.multiply(vec2, 0.5, vec2);
     // store.changes.push(velChanges.add(rect, vec2));
   }
+  /*
   // Render normal vectors, though this looks awkward
   lineGeom[0] = rectGeom[(vec3[0] === 0) ? 0 : (1 + vec3[0])];
   lineGeom[2] = rectGeom[(vec3[0] === 0) ? 2 : (1 + vec3[0])];
@@ -103,7 +120,7 @@ function lineRect(line, rect, store) {
     vector: true,
     x: lineGeom[0], y: lineGeom[1],
     vx: lineGeom[2] - lineGeom[0], vy: lineGeom[3] - lineGeom[1]
-  });
+  });*/
   return true;
 }
 
