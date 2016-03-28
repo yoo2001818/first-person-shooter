@@ -17,17 +17,17 @@ export default class EditorApp extends Component {
               <TabPanel title='Entities'>
                 <EntityList entities={store.state.entities} />
               </TabPanel>
-              <TabPanel title='Hello'>
+              <TabPanel title='Configuration'>
                 World
               </TabPanel>
             </TabBox>
           </div>
           <div className='pane-component pane-center viewport'>
-            <h1>Viewport</h1>
+            <h1>Center pane</h1>
           </div>
           <div className='pane-component pane-right'>
             <TabBox>
-              <TabPanel title='Properties'>
+              <TabPanel title='Inspector'>
                 Right pane
               </TabPanel>
             </TabBox>

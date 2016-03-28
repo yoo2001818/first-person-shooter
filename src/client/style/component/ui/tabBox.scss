@@ -1,6 +1,7 @@
 .tab-box-component {
   width: 100%;
   height: 100%;
+  position: relative;
   & > .tab-list {
     list-style-type: none;
     margin: 0;
@@ -22,15 +23,14 @@
       padding: 0 0.55em;
       line-height: 2.2em;
       border: 1px solid transparent;
-      border-bottom: 1px solid $green-800;
       position: relative;
-      bottom: -1px;
       border-radius: 3px 3px 0 0;
       cursor: default;
       &:hover {
         background-color: $green-600;
       }
       &.selected {
+        bottom: -1px;
         background-color: $grey-100;
         color: $green-800;
         border: 1px solid $green-800;
@@ -39,6 +39,12 @@
     }
   }
   & > .tab-panel {
+    position: absolute;
+    margin-top: 1px;
+    top: 2.6em * 0.85;
+    left: 0;
+    right: 0;
+    bottom: 0;
     display: none;
     &.selected {
       display: block;

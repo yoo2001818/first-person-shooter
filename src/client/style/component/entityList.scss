@@ -1,0 +1,45 @@
+.entity-list {
+  height: 100%;
+  position: relative;
+  & > .header {
+    padding: 0 0.5em;
+    line-height: 1.8rem;
+    font-size: 0.85em;
+    border-bottom: 1px solid $grey-400;
+    background: linear-gradient(to bottom, $grey-100, $grey-200);
+  }
+  & > .content {
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+    overflow-y: scroll;
+    position: absolute;
+    top: 1.8em;
+    margin-top: 1px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: $grey-200;
+    & > li {
+      background: $grey-100;
+      padding: 0.5em 0.6em;
+      border-bottom: 1px solid $grey-400;
+      vertical-align: middle;
+      & > .id {
+        font-size: 0.8em;
+        vertical-align: middle;
+        color: $grey-600;
+      }
+      & > .name {
+        vertical-align: middle;
+        padding-left: 0.4em;
+      }
+      &:nth-child(2n) {
+        background-color: $grey-200;
+      }
+      &.selected {
+        background-color: $blue-200;
+      }
+    }
+  }
+}
