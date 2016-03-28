@@ -9,6 +9,7 @@ export default class DebugSystem {
     this.store = store;
     store.actions.on(engineActions.INIT, () => {
       store.changes.push(ECSChanges.entityCreate(undefined, {
+        name: 'Character',
         pos: {
           translate: Vector.create(100, 50),
           scale: Vector.create(50, 50),
@@ -24,6 +25,7 @@ export default class DebugSystem {
         cursor: {}
       }));
       store.changes.push(ECSChanges.entityCreate(undefined, {
+        name: 'Line 1',
         pos: {
           translate: Vector.create(-100, 100),
           scale: Vector.create(100, 0),
@@ -37,6 +39,7 @@ export default class DebugSystem {
         }
       }));
       store.changes.push(ECSChanges.entityCreate(undefined, {
+        name: 'Line 2',
         pos: {
           translate: Vector.create(-200, -100),
           scale: Vector.create(0, 100),
@@ -50,6 +53,7 @@ export default class DebugSystem {
         }
       }));
       store.changes.push(ECSChanges.entityCreate(undefined, {
+        name: 'Line 3',
         pos: {
           translate: Vector.create(200, 10),
           scale: Vector.create(200, 100),
@@ -63,6 +67,7 @@ export default class DebugSystem {
         }
       }));
       store.changes.push(ECSChanges.entityCreate(undefined, {
+        name: 'Line 4',
         pos: {
           translate: Vector.create(100, -290),
           scale: Vector.create(-100, 200),

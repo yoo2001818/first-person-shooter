@@ -1,4 +1,5 @@
 var path = require('path');
+var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
@@ -10,6 +11,8 @@ module.exports = {
     chunkFilename: '[id].js'
   },
   plugins: [
+    new webpack.optimize.OccurenceOrderPlugin(),
+    new webpack.NoErrorsPlugin(),
     new HtmlWebpackPlugin({
       title: 'first-person-shooter'
     })
@@ -19,7 +22,7 @@ module.exports = {
       {
         test: /\.jsx?$/i,
         exclude: /(node_modules|bower_components)/,
-        loader: 'babel'
+        loader: 'react-hot!babel'
       },
       {
         test: /\.json$/i,
@@ -29,26 +32,22 @@ module.exports = {
         test: /\.html?$/i,
         loader: 'html'
       },
-      /*
       {
         test: /\.css$/i,
-        loader: ExtractTextPlugin.extract('style', 'css!import-glob')
+        loader: 'style!css!import-glob'
       },
       {
         test: /\.s[ca]ss$/i,
-        loader: ExtractTextPlugin.extract('style', 'css!sass!import-glob')
+        loader: 'style!css!sass!import-glob'
       },
       {
         test: /\.(otf|eot|svg|ttf|woff|woff2)(\?.+)?$/,
         loader: 'url-loader?limit=10240'
-      },*/
+      },
       {
         test: /\.(png|jpe?g|gif|tiff)?$/,
         loader: 'file-loader'
       }
     ]
-  },
-  node: {
-    fs: 'empty'
-  },
+  }
 };

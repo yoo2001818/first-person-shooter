@@ -30,7 +30,7 @@ export default function createStore() {
   // factory.addMiddleware(logger);
   // Set state
   factory.setState(new ECSState([
-    'pos', 'vel', 'collision', 'render', 'cursor'
+    'pos', 'vel', 'collision', 'render', 'cursor', 'name'
   ]));
   // Finally set up the state and return object
   return factory.create();

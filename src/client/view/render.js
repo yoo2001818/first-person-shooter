@@ -37,6 +37,7 @@ export default class RenderView {
     window.addEventListener('mouseup', () => {
       window.removeEventListener('mousemove', handleMouseMove);
     });
+    /*
     canvas.addEventListener('mousemove', e => {
       this.store.dispatch({
         type: 'cursor/move',
@@ -46,6 +47,7 @@ export default class RenderView {
         }
       });
     });
+    */
   }
   render() {
     const { ctx, canvas } = this;
