@@ -1,0 +1,29 @@
+.pane-component {
+  width: $pane-width;
+  background-color: $grey-100;
+  box-sizing: border-box;
+  // position: absolute;
+  &.pane-left {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    border-right: 1px solid $green-800;
+  }
+  &.pane-right {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    border-left: 1px solid $green-800;
+  }
+  &.pane-center {
+    background-color: transparent;
+    width: auto;
+    position: absolute;
+    top: 0;
+    left: $pane-width;
+    right: $pane-width;
+    bottom: 0;
+  }
+}
