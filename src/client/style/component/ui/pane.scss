@@ -2,6 +2,7 @@
   width: $pane-width;
   background-color: $grey-100;
   box-sizing: border-box;
+  overflow: hidden;
   // position: absolute;
   &.pane-left {
     position: absolute;

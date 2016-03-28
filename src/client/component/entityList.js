@@ -1,8 +1,9 @@
 import React, { Component, PropTypes } from 'react';
+import classNames from 'classnames';
 
 export default class EntityList extends Component {
   render() {
-    const { entities } = this.props;
+    const { entities, selected, onSelect = () => {} } = this.props;
     return (
       <div className='entity-list'>
         <div className='header'>
@@ -13,7 +14,10 @@ export default class EntityList extends Component {
         <ul className='content'>
           {
             entities.map((e, id) => (
-              <li key={id}>
+              <li key={id}
+                className={classNames({selected: selected === id})}
+                onClick={onSelect.bind(null, id)}
+              >
                 <span className='id'>
                   {id}
                 </span>
@@ -30,5 +34,7 @@ export default class EntityList extends Component {
 }
 
 EntityList.propTypes = {
-  entities: PropTypes.array
+  entities: PropTypes.array,
+  onSelect: PropTypes.func,
+  selected: PropTypes.number
 };

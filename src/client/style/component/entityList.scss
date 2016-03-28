@@ -37,8 +37,17 @@
       &:nth-child(2n) {
         background-color: $grey-200;
       }
-      &.selected {
+      &:hover {
         background-color: $blue-200;
+      }
+      &.selected {
+        background-color: $blue-600;
+        & > .id {
+          color: $blue-300;
+        }
+        & > .name {
+          color: $blue-100;
+        }
       }
     }
   }
