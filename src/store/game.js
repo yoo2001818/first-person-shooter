@@ -10,7 +10,7 @@ import VelController from '../controller/vel';
 
 import DebugSystem from '../system/debug';
 import VelSystem from '../system/vel';
-import CollisionSystem from '../system/collision';
+// import CollisionSystem from '../system/collision';
 import CursorSystem from '../system/cursor';
 
 // Configure game store object
@@ -24,7 +24,7 @@ export default function createStore() {
   factory.addSystem('family', FamilySystem);
   factory.addSystem('debug', DebugSystem);
   factory.addSystem('vel', VelSystem);
-  factory.addSystem('collision', CollisionSystem);
+  // factory.addSystem('collision', CollisionSystem);
   factory.addSystem('cursor', CursorSystem);
   // Add middleware
   // factory.addMiddleware(logger);

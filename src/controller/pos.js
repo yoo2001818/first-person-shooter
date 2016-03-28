@@ -20,12 +20,12 @@ const PosController = {
       entity.pos.x + x, entity.pos.y + y
     ));
     */
-    if (store.state.globals.debug == null) store.state.globals.debug = [];
+    /*if (store.state.globals.debug == null) store.state.globals.debug = [];
     store.state.globals.debug.push({
       vector: true,
       x: entity.pos.translate[0], y: entity.pos.translate[1],
       vx: vec[0], vy: vec[1]
-    });
+    });*/
     Vector.add(entity.pos.translate, vec, entity.pos.translate);
   }
 };
