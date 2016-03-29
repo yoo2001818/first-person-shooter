@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import Container from '../component/ui/container';
 import Header from '../component/header';
 import EntityList from '../component/entityList';
+import EntityInspector from '../component/entityInspector';
 import TabBox, { TabPanel } from '../component/ui/tabBox';
 
 export default class EditorApp extends Component {
@@ -44,9 +45,9 @@ export default class EditorApp extends Component {
           <div className='pane-component pane-right'>
             <TabBox>
               <TabPanel title='Inspector'>
-                {
-                  JSON.stringify(store.state.entities[selectedEntity])
-                }
+                <EntityInspector
+                  entity={store.state.entities[selectedEntity]}
+                  />
               </TabPanel>
             </TabBox>
           </div>

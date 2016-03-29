@@ -12,6 +12,7 @@ import DebugSystem from '../system/debug';
 import VelSystem from '../system/vel';
 // import CollisionSystem from '../system/collision';
 import CursorSystem from '../system/cursor';
+import EditorSystem from '../system/editor';
 
 // Configure game store object
 export default function createStore() {
@@ -26,6 +27,7 @@ export default function createStore() {
   factory.addSystem('vel', VelSystem);
   // factory.addSystem('collision', CollisionSystem);
   factory.addSystem('cursor', CursorSystem);
+  factory.addSystem('editor', EditorSystem);
   // Add middleware
   // factory.addMiddleware(logger);
   // Set state

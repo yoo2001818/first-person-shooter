@@ -1,0 +1,17 @@
+.field-component {
+  display: table;
+  line-height: 2em;
+  vertical-align: middle;
+  & > .field {
+    display: table-cell;
+    width: 5em;
+    text-align: center;
+    font-size: 0.8em;
+    vertical-align: middle;
+    color: $grey-700;
+  }
+  & > .content {
+    display: table-cell;
+    vertical-align: middle;
+  }
+}

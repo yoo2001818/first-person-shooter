@@ -1,0 +1,55 @@
+.entity-inspector {
+  height: 100%;
+  overflow-y: scroll;
+  background-color: $grey-200;
+  & > .panel {
+    &:last-child {
+      border-bottom: 1px solid $grey-400;
+    }
+    background-color: $grey-100;
+    & > .header {
+      line-height: 2.2em;
+      padding: 0 0.6em;
+      font-size: 0.9em;
+      border-top: 1px solid $blue-800;
+      border-bottom: 1px solid $blue-800;
+      background: $blue-700;
+      color: $blue-100;
+    }
+    &.overview > .content {
+      display: table;
+      line-height: 2em;
+      vertical-align: middle;
+      & > .id {
+        display: table-cell;
+        width: 2.2em;
+        text-align: center;
+        font-size: 0.8em;
+        vertical-align: middle;
+        color: $grey-600;
+      }
+      & > .name {
+        display: table-cell;
+        vertical-align: middle;
+        & > input {
+          display: block;
+          width: 100%;
+          box-sizing: border-box;
+          color: $grey-800;
+          background: 0;
+          padding: 0.5em;
+          margin: 0;
+          border-radius: 3px;
+          border: none;
+          &:hover {
+            color: $grey-700;
+          }
+          &:focus {
+            background-color: $blue-200;
+            color: $blue-800;
+          }
+        }
+      }
+    }
+  }
+}
