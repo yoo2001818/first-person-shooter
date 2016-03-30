@@ -7,6 +7,7 @@ import FamilySystem from 'ecsalator/lib/ecs/familySystem';
 
 import PosController from '../controller/pos';
 import VelController from '../controller/vel';
+import EditorController from '../controller/editor';
 
 import DebugSystem from '../system/debug';
 import VelSystem from '../system/vel';
@@ -21,6 +22,7 @@ export default function createStore() {
   factory.addController('ecs', ECSController);
   factory.addController('pos', PosController);
   factory.addController('vel', VelController);
+  factory.addController('editor', EditorController);
   // Add system
   factory.addSystem('family', FamilySystem);
   factory.addSystem('debug', DebugSystem);

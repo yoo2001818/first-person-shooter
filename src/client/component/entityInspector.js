@@ -4,7 +4,6 @@ import classNames from 'classnames';
 import Field from './ui/field';
 import DropDown from './ui/dropDown';
 import VectorInput from './ui/vectorInput';
-import NumberInput from './ui/numberInput';
 
 export class Panel extends Component {
   render() {
@@ -93,10 +92,14 @@ export default class EntityInspector extends Component {
           </Panel>
         )}
         <Panel header='JSON representation'>
-          { JSON.stringify(entity) }
-        </Panel>
-        <Panel header='Title'>
-          ...
+          <code><pre>
+            { JSON.stringify(entity, (key, value) => {
+              if (value instanceof Float32Array) {
+                return Array.from(value);
+              }
+              return value;
+            }, 2) }
+          </pre></code>
         </Panel>
       </div>
     );

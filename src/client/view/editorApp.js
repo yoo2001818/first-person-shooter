@@ -5,21 +5,21 @@ import EntityList from '../component/entityList';
 import EntityInspector from '../component/entityInspector';
 import TabBox, { TabPanel } from '../component/ui/tabBox';
 
+import * as editorActions from '../../game/action/editor';
+
 export default class EditorApp extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      selectedEntity: 0
-    };
   }
   handleSelect(id) {
-    this.setState({
-      selectedEntity: id
+    this.props.store.dispatch({
+      type: editorActions.SELECT_ENTITY,
+      payload: id
     });
   }
   render() {
     const { store } = this.props;
-    const { selectedEntity } = this.state;
+    const { editor } = store.state.globals;
     return (
       <div className='app'>
         <Container
@@ -30,7 +30,7 @@ export default class EditorApp extends Component {
               <TabPanel title='Entities'>
                 <EntityList
                   entities={store.state.entities}
-                  selected={selectedEntity}
+                  selected={editor.selectedEntity}
                   onSelect={this.handleSelect.bind(this)}
                 />
               </TabPanel>
@@ -40,14 +40,15 @@ export default class EditorApp extends Component {
             </TabBox>
           </div>
           <div className='pane-component pane-center viewport'>
-            <h1>Center pane</h1>
           </div>
           <div className='pane-component pane-right'>
             <TabBox>
               <TabPanel title='Inspector'>
-                <EntityInspector
-                  entity={store.state.entities[selectedEntity]}
-                  />
+                {editor.selectedEntity != null && (
+                  <EntityInspector
+                    entity={store.state.entities[editor.selectedEntity]}
+                    />
+                )}
               </TabPanel>
             </TabBox>
           </div>

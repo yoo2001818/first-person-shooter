@@ -29,3 +29,7 @@ let container = document.createElement('div');
 container.className = 'app-container';
 document.body.appendChild(container);
 render(<EditorApp store={store} />, container);
+
+store.subscribe('all', () => {
+  render(<EditorApp store={store} />, container);
+});
