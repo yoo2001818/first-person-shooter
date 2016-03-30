@@ -1,37 +1,15 @@
 import React, { Component, PropTypes } from 'react';
-import classNames from 'classnames';
 
+import inspectors from './inspector';
+
+import Panel from './inspector/panel';
 import Field from './ui/field';
-import DropDown from './ui/dropDown';
 import VectorInput from './ui/vectorInput';
 
-export class Panel extends Component {
-  render() {
-    const { className, header, children } = this.props;
-    return (
-      <div className={classNames('panel', className)}>
-        { header && (
-          <div className='header'>
-            { header }
-          </div>
-        )}
-        <div className='content'>
-          { children }
-        </div>
-      </div>
-    );
-  }
-}
-
-Panel.propTypes = {
-  className: PropTypes.string,
-  header: PropTypes.node,
-  children: PropTypes.node
-};
 
 export default class EntityInspector extends Component {
   render() {
-    const { entity } = this.props;
+    const { entity, onEdit = () => {} } = this.props;
     return (
       <div className='entity-inspector'>
         <Panel className='overview'>
@@ -42,35 +20,17 @@ export default class EntityInspector extends Component {
             <input type='text' value={ entity.name } />
           </span>
         </Panel>
-        { entity.pos && (
-          <Panel header='Position'>
-            <Field field='Type'>
-              <DropDown title='Rectangle'>
-                <ul>
-                  <li><span>Rectangle</span></li>
-                  <li><span>Circle</span></li>
-                  <li><span>Line</span></li>
-                  <li><span>Point</span></li>
-                </ul>
-              </DropDown>
-            </Field>
-            <Field field='Translate'>
-              <VectorInput vector={ entity.pos.translate } />
-            </Field>
-            <Field field='Scale'>
-              <VectorInput vector={ entity.pos.scale } />
-            </Field>
-            {/*
-            <Field field='Rotation'>
-              <NumberInput vector={ entity.pos.rotation } />
-            </Field>
-            */}
-          </Panel>
-        )}
+        { Object.keys(entity).map(key => {
+          if (inspectors[key] == null) return null;
+          let KeyPanel = inspectors[key];
+          return (
+            <KeyPanel entity={entity} onEdit={onEdit} key={key} />
+          );
+        }).filter(a => a != null) }
         { entity.vel && (
           <Panel header='Velocity'>
             <Field field='Velocity'>
-              <VectorInput vector={ entity.vel } />
+              <VectorInput value={ entity.vel } />
             </Field>
           </Panel>
         )}
@@ -107,5 +67,6 @@ export default class EntityInspector extends Component {
 }
 
 EntityInspector.propTypes = {
-  entity: PropTypes.object
+  entity: PropTypes.object,
+  onEdit: PropTypes.func
 };

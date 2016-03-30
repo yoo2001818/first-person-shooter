@@ -17,6 +17,12 @@ export default class EditorApp extends Component {
       payload: id
     });
   }
+  handleEdit(event) {
+    this.props.store.dispatch({
+      type: editorActions.SET,
+      payload: event
+    });
+  }
   render() {
     const { store } = this.props;
     const { editor } = store.state.globals;
@@ -47,6 +53,7 @@ export default class EditorApp extends Component {
                 {editor.selectedEntity != null && (
                   <EntityInspector
                     entity={store.state.entities[editor.selectedEntity]}
+                    onEdit={this.handleEdit.bind(this)}
                     />
                 )}
               </TabPanel>

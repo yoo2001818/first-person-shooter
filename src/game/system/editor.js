@@ -15,5 +15,8 @@ export default class EditorSystem {
     store.actions.on(editorActions.SELECT_ENTITY, action => {
       store.changes.push(editorChanges.selectEntity(action.payload));
     });
+    store.actions.on(editorActions.SET, action => {
+      store.changes.push(action.payload);
+    });
   }
 }
