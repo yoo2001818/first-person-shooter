@@ -1,9 +1,10 @@
 .field-component {
-  display: table;
+  position: relative;
   line-height: 2em;
   vertical-align: middle;
   & > .field {
-    display: table-cell;
+    position: absolute;
+    display: block;
     width: 5em;
     text-align: center;
     font-size: 0.8em;
@@ -11,7 +12,10 @@
     color: $grey-700;
   }
   & > .content {
-    display: table-cell;
+    display: block;
+    padding-left: 5em * 0.8;
     vertical-align: middle;
+    width: 100%;
+    box-sizing: border-box;
   }
 }

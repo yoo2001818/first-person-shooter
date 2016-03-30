@@ -20,7 +20,7 @@ export default class DebugSystem {
 
         },
         render: {
-          color: '#000'
+          color: '#000000'
         },
         cursor: {}
       }));
@@ -35,7 +35,7 @@ export default class DebugSystem {
 
         },
         render: {
-          color: '#00f'
+          color: '#0000ff'
         }
       }));
       store.changes.push(ECSChanges.entityCreate(undefined, {
@@ -49,7 +49,7 @@ export default class DebugSystem {
 
         },
         render: {
-          color: '#00f'
+          color: '#0000ff'
         }
       }));
       store.changes.push(ECSChanges.entityCreate(undefined, {
@@ -63,7 +63,7 @@ export default class DebugSystem {
 
         },
         render: {
-          color: '#00f'
+          color: '#0000ff'
         }
       }));
       store.changes.push(ECSChanges.entityCreate(undefined, {
@@ -77,7 +77,7 @@ export default class DebugSystem {
 
         },
         render: {
-          color: '#00f'
+          color: '#0000ff'
         }
       }));
     });

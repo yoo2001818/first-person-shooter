@@ -33,9 +33,7 @@ export default class DropDown extends Component {
   render() {
     const { hidden } = this.state;
     const buttonContent = (
-      <a href={this.props.href || '#'}>
-        <span className='title'>{this.props.title}</span>
-      </a>
+      <span className='title'>{this.props.title}</span>
     );
     return (
       <div className={classNames('drop-down-component', { hidden })}>

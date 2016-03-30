@@ -3,18 +3,35 @@
   overflow-y: scroll;
   background-color: $grey-200;
   & > .panel {
-    &:last-child {
-      border-bottom: 1px solid $grey-400;
-    }
+    border-bottom: 1px solid $grey-500;
     background-color: $grey-100;
     & > .header {
       line-height: 2.2em;
-      padding: 0 0.6em;
+      padding: 0 0.7em;
       font-size: 0.9em;
-      border-top: 1px solid $blue-800;
-      border-bottom: 1px solid $blue-800;
-      background: $blue-700;
-      color: $blue-100;
+      // border-top: 1px solid $blue-800;
+      // border-bottom: 1px solid $blue-400;
+      background: linear-gradient(to bottom, $grey-200, $grey-100);
+      color: $grey-800;
+    }
+    & > .content {
+      input.input {
+        display: inline-block;
+        width: 100%;
+        box-sizing: border-box;
+        color: $grey-800;
+        background: 0;
+        padding: 0 0.5em;
+        line-height: 2em;
+        margin: 0;
+        border-radius: 3px;
+        border: none;
+        &[type='color'] {
+          height: 1em;
+          line-height: 1em;
+          vertical-align: middle;
+        }
+      }
     }
     &.overview > .content {
       display: table;

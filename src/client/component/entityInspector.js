@@ -3,6 +3,8 @@ import classNames from 'classnames';
 
 import Field from './ui/field';
 import DropDown from './ui/dropDown';
+import VectorInput from './ui/vectorInput';
+import NumberInput from './ui/numberInput';
 
 export class Panel extends Component {
   render() {
@@ -45,21 +47,49 @@ export default class EntityInspector extends Component {
           <Panel header='Position'>
             <Field field='Type'>
               <DropDown title='Rectangle'>
-                <div>Rectangle잘깨진다</div>
+                <ul>
+                  <li><span>Rectangle</span></li>
+                  <li><span>Circle</span></li>
+                  <li><span>Line</span></li>
+                  <li><span>Point</span></li>
+                </ul>
               </DropDown>
             </Field>
-            <Field field='Translate'>Data</Field>
-            <Field field='Scale'>Data</Field>
-            <Field field='Rotation'>Data</Field>
+            <Field field='Translate'>
+              <VectorInput vector={ entity.pos.translate } />
+            </Field>
+            <Field field='Scale'>
+              <VectorInput vector={ entity.pos.scale } />
+            </Field>
+            {/*
+            <Field field='Rotation'>
+              <NumberInput vector={ entity.pos.rotation } />
+            </Field>
+            */}
           </Panel>
         )}
         { entity.vel && (
           <Panel header='Velocity'>
-            <Field field='Velocity'>Data</Field>
+            <Field field='Velocity'>
+              <VectorInput vector={ entity.vel } />
+            </Field>
           </Panel>
         )}
         { entity.cursor && (
           <Panel header='Follow Cursor'>
+          </Panel>
+        )}
+        { entity.collision && (
+          <Panel header='Collision'>
+          </Panel>
+        )}
+        { entity.render && (
+          <Panel header='Render'>
+            <Field field='Color'>
+              <input type='color' className='input color-input'
+                value={ entity.render.color }
+              />
+            </Field>
           </Panel>
         )}
         <Panel header='JSON representation'>

@@ -33,7 +33,7 @@
     position: absolute;
     font-size: 0.9rem;
     top: 100%;
-    right: 0;
+    left: 0;
     text-align: left;
     background-color: $grey-100;
     color: $grey-800;
@@ -59,16 +59,18 @@
       content: '';
       position: absolute;
       top: -20px;
-      right: 1.3em;
-      margin-right: -10px;
+      left: 1.3em;
+      // right: 50%;
+      margin-left: -10px;
       @include triangle-top(10px, 10px, $grey-500);
     }
     &:after {
       content: '';
       position: absolute;
       top: -18px;
-      right: 1.3em;
-      margin-right: -9px;
+      left: 1.3em;
+      // right: 50%;
+      margin-left: -9px;
       @include triangle-top(9px, 9px, $grey-100);
     }
     // Common thing - a dropdown list
@@ -79,10 +81,12 @@
       & > li {
         margin: 0;
         padding: 0;
-        a {
+        a, span {
           display: block;
           padding: 0.5em 1em;
+          cursor: pointer;
           &:hover {
+            text-decoration: underline;
             background-color: $grey-200;
           }
         }
