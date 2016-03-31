@@ -4,13 +4,12 @@ import * as GeomType from '../../game/util/geometryType';
 export class Entity extends Component {
   render() {
     const { pos: { translate: t, scale: s, type }, render } = this.props.entity;
-    /* const boundingBox = (
-      <rect x={-s[0] - 0.5} y={-s[1] - 0.5}
-        width={s[0] * 2 + 1} height={s[1] * 2 + 1}
-        fill='none' stroke='#006FFF'
+    const boundingBox = (
+      <rect x={-Math.abs(s[0]) - 1} y={-Math.abs(s[1]) - 1}
+        width={Math.abs(s[0]) * 2 + 2} height={Math.abs(s[1]) * 2 + 2}
         className='bounding-box'
         />
-    ); */
+    );
     let shape;
     switch (type) {
     case GeomType.RECT:
@@ -33,6 +32,7 @@ export class Entity extends Component {
     }
     return (
       <g transform={`translate(${t[0]} ${t[1]})`}>
+        {this.props.selected && boundingBox}
         {shape}
       </g>
     );
@@ -40,10 +40,18 @@ export class Entity extends Component {
 }
 
 Entity.propTypes = {
-  entity: PropTypes.object.isRequired
+  entity: PropTypes.object.isRequired,
+  selected: PropTypes.bool
 };
 
 export default class Viewport extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      width: 800,
+      height: 600
+    };
+  }
   componentWillMount() {
     const { store } = this.props;
     this.entities = store.systems.family.get(['pos', 'render']).entities;
@@ -55,14 +63,19 @@ export default class Viewport extends Component {
     this.entities = store.systems.family.get(['pos', 'render']).entities;
   }
   render() {
+    const { store } = this.props;
     return (
-      <svg className='viewport-component'
-        width="800" height="600" viewBox="-400 -300 800 600"
-      >
-        {this.entities.map(entity => (
-          <Entity entity={entity} key={entity.id} />
-        ))}
-      </svg>
+      <div className='viewport-component'>
+        <svg className='viewport-canvas'
+          width="800" height="600" viewBox="-400 -300 800 600"
+        >
+          {this.entities.map(entity => (
+            <Entity entity={entity} key={entity.id}
+              selected={entity.id === store.state.globals.editor.selectedEntity}
+              />
+          ))}
+        </svg>
+      </div>
     );
   }
 }
