@@ -1,0 +1,19 @@
+.viewport-component {
+  shape-rendering: optimizeSpeed;
+  stroke-width: 1px;
+  .bounding-box {
+    //stroke-dasharray: 4;
+    stroke-width: 1px;
+    vector-effect: non-scaling-stroke;
+    // animation: bounding-box-anim 0.5s linear infinite;
+  }
+}
+
+@keyframes bounding-box-anim {
+  0% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: 8;
+  }
+}

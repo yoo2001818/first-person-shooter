@@ -12,7 +12,7 @@ export default class NumberInput extends Component {
     this.setState({
       editValue: e.target.value
     });
-    if (!this.state.focused) {
+    if (!this.state.focused || !isNaN(parseFloat(e.target.value))) {
       if (this.props.onChange) this.props.onChange(e);
     }
   }

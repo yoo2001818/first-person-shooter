@@ -21,8 +21,8 @@ export default class DebugSystem {
         },
         render: {
           color: '#000000'
-        },
-        cursor: {}
+        }
+        // cursor: {}
       }));
       store.changes.push(ECSChanges.entityCreate(undefined, {
         name: 'Line 1',
