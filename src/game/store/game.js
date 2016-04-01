@@ -11,7 +11,7 @@ import EditorController from '../controller/editor';
 
 import DebugSystem from '../system/debug';
 import VelSystem from '../system/vel';
-// import CollisionSystem from '../system/collision';
+import CollisionSystem from '../system/collision';
 import CursorSystem from '../system/cursor';
 import EditorSystem from '../system/editor';
 
@@ -27,7 +27,7 @@ export default function createStore() {
   factory.addSystem('family', FamilySystem);
   factory.addSystem('debug', DebugSystem);
   factory.addSystem('vel', VelSystem);
-  // factory.addSystem('collision', CollisionSystem);
+  factory.addSystem('collision', CollisionSystem);
   factory.addSystem('cursor', CursorSystem);
   factory.addSystem('editor', EditorSystem);
   // Add middleware

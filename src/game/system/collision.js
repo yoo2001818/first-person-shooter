@@ -51,7 +51,7 @@ function lineRect(line, rect, store) {
   if (!Rect.intersectsLine(rectGeom, lineGeom, vec1, vec2, vec3, vec4)) {
     return false;
   }
-  //console.log(inspectVec(vec1), inspectVec(vec2), inspectVec(vec3));
+  // console.log(inspectVec(vec1), inspectVec(vec2), inspectVec(vec3));
   addDebugSymbol(vec1, store);
   addDebugSymbol(Vector.add(vec1, vec2, vec5), store);
   store.state.globals.debug.push({

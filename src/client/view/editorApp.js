@@ -24,6 +24,14 @@ export default class EditorApp extends Component {
       payload: event
     });
   }
+  handleUpdate() {
+    this.props.store.dispatch({
+      type: 'engine/update',
+      payload: {
+        delta: 0
+      }
+    });
+  }
   render() {
     const { store } = this.props;
     const { editor } = store.state.globals;
@@ -43,6 +51,7 @@ export default class EditorApp extends Component {
               </TabPanel>
               <TabPanel title='Configuration'>
                 World
+                <button onClick={this.handleUpdate.bind(this)}>Update</button>
               </TabPanel>
             </TabBox>
           </div>

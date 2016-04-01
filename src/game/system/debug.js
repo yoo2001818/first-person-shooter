@@ -27,7 +27,7 @@ export default class DebugSystem {
       store.changes.push(ECSChanges.entityCreate(undefined, {
         name: 'Line 1',
         pos: {
-          translate: Vector.create(-100, 100),
+          translate: Vector.create(-100, 150),
           scale: Vector.create(100, 0),
           type: GeometryType.LINE
         },
