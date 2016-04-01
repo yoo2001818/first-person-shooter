@@ -14,8 +14,8 @@ export class Entity extends Component {
     switch (type) {
     case GeomType.RECT:
       shape = (
-        <rect x={-s[0]} y={-s[1]}
-          width={s[0] * 2} height={s[1] * 2}
+        <rect x={-s[0] | 0} y={-s[1] | 0}
+          width={s[0] * 2 | 0} height={s[1] * 2 | 0}
           fill='none' stroke={render.color}
           />
       );
@@ -23,15 +23,15 @@ export class Entity extends Component {
     case GeomType.LINE:
     default:
       shape = (
-        <line x1={-s[0]} y1={-s[1]}
-          x2={s[0]} y2={s[1]}
+        <line x1={-s[0] | 0} y1={-s[1] | 0}
+          x2={s[0] | 0} y2={s[1] | 0}
           stroke={render.color}
           />
       );
       break;
     }
     return (
-      <g transform={`translate(${t[0]} ${t[1]})`}>
+      <g transform={`translate(${t[0] | 0} ${t[1] | 0})`}>
         {this.props.selected && boundingBox}
         {shape}
       </g>
@@ -52,6 +52,22 @@ export default class Viewport extends Component {
       height: 600
     };
   }
+  validateSize() {
+    const { clientWidth: width, clientHeight: height } = this.refs.container;
+    if (this.state.width !== width || this.state.height !== height) {
+      this.setState({ width, height });
+    }
+  }
+  componentDidMount() {
+    this.validateSize();
+    this.validateCallback = () => {
+      setTimeout(() => this.validateSize(), 1);
+    };
+    window.addEventListener('resize', this.validateCallback);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.validateCallback);
+  }
   componentWillMount() {
     const { store } = this.props;
     this.entities = store.systems.family.get(['pos', 'render']).entities;
@@ -64,10 +80,14 @@ export default class Viewport extends Component {
   }
   render() {
     const { store } = this.props;
+    const { width, height } = this.state;
+    const viewX = (-width / 2 | 0) + 0.5;
+    const viewY = (-height / 2 | 0) + 0.5;
     return (
-      <div className='viewport-component'>
+      <div className='viewport-component' ref='container'>
         <svg className='viewport-canvas'
-          width="800" height="600" viewBox="-400 -300 800 600"
+          width={width} height={height}
+          viewBox={`${viewX} ${viewY} ${width} ${height}`}
         >
           {this.entities.map(entity => (
             <Entity entity={entity} key={entity.id}
