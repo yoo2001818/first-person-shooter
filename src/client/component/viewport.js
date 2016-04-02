@@ -20,6 +20,13 @@ export class Entity extends Component {
           />
       );
       break;
+    case GeomType.CIRCLE:
+      shape = (
+        <circle cx={0} cy={0} r={s[0] | 0}
+          fill='none' stroke={render.color}
+          />
+      );
+      break;
     case GeomType.LINE:
     default:
       shape = (
@@ -81,8 +88,8 @@ export default class Viewport extends Component {
   render() {
     const { store } = this.props;
     const { width, height } = this.state;
-    const viewX = (-width / 2 | 0) + 0.5;
-    const viewY = (-height / 2 | 0) + 0.5;
+    const viewX = (-width / 2 | 0);
+    const viewY = (-height / 2 | 0);
     return (
       <div className='viewport-component' ref='container'>
         <svg className='viewport-canvas'

@@ -3,7 +3,7 @@
   height: 100%;
   .viewport-canvas {
     background: #fff;
-    shape-rendering: optimizeSpeed;
+    shape-rendering: crispEdges;
     stroke-width: 1px;
     .bounding-box {
       stroke-dasharray: 3;

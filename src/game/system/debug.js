@@ -13,7 +13,7 @@ export default class DebugSystem {
         pos: {
           translate: Vector.create(100, 50),
           scale: Vector.create(50, 50),
-          type: GeometryType.RECT
+          type: GeometryType.CIRCLE
         },
         vel: Vector.create(1, 0),
         collision: {
