@@ -33,6 +33,10 @@ module.exports = {
         loader: 'html'
       },
       {
+        test: /(\.vert$|\.frag$)/i,
+        loader: 'raw'
+      },
+      {
         test: /\.css$/i,
         loader: 'style!css!import-glob'
       },

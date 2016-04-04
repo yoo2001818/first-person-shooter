@@ -1,4 +1,4 @@
-import * as GeometryType from '../util/geometryType';
+import * as GeometryType from '../../game/util/geometryType';
 
 export default class RenderView {
   constructor(store, canvas) {
@@ -25,7 +25,7 @@ export default class RenderView {
       this.camera.x += diffX;
       this.camera.y += diffY;
       // Request rerender
-      // window.requestAnimationFrame(this.render.bind(this));
+      window.requestAnimationFrame(this.render.bind(this));
     };
     canvas.addEventListener('contextmenu', e => e.preventDefault());
     canvas.addEventListener('mousedown', e => {

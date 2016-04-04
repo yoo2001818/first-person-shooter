@@ -47,12 +47,17 @@ export default class TabBox extends Component {
             </ul>
           ))}
         </li>
-        { Children.map(children, (element, id) => (
+        {/* Children.map(children, (element, id) => (
             cloneElement(element, {
               selected: id === selected
             })
           )
-        )}
+        ) */}
+        {
+          cloneElement(Children.toArray(children)[selected], {
+            selected: true
+          })
+        }
       </div>
     );
   }

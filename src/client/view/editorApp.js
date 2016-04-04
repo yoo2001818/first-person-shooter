@@ -5,6 +5,7 @@ import EntityList from '../component/entityList';
 import EntityInspector from '../component/entityInspector';
 import TabBox, { TabPanel } from '../component/ui/tabBox';
 import Viewport from '../component/viewport';
+import Viewer3D from '../component/viewer3d';
 
 import * as editorActions from '../../game/action/editor';
 
@@ -56,7 +57,14 @@ export default class EditorApp extends Component {
             </TabBox>
           </div>
           <div className='pane-component pane-center viewport'>
-            <Viewport store={store} />
+            <TabBox>
+              <TabPanel title='Editor'>
+                <Viewport store={store} />
+              </TabPanel>
+              <TabPanel title='3D Viewer'>
+                <Viewer3D store={store} />
+              </TabPanel>
+            </TabBox>
           </div>
           <div className='pane-component pane-right'>
             <TabBox>
