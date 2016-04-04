@@ -1,4 +1,5 @@
 import { mat4, vec3 } from 'gl-matrix';
+import Texture from '../asset/texture.png';
 
 export default class RenderView3D {
   constructor(store, canvas) {
@@ -45,12 +46,16 @@ export default class RenderView3D {
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     // Enable depth testing
     gl.enable(gl.DEPTH_TEST);
+    // gl.enable(gl.BLEND);
+    // gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
     // Near things obscure far things
     gl.depthFunc(gl.LEQUAL);
     // Clear the color as well as the depth buffer.
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     this.initShaders();
+    this.initTextures();
     this.initBuffers();
+    this.render();
   }
   initShaders() {
     const gl = this.gl;
@@ -72,23 +77,74 @@ export default class RenderView3D {
     let vertColor = gl.getAttribLocation(program, 'aVertexColor');
     gl.enableVertexAttribArray(vertColor);
     this.vertColorAttrib = vertColor;
+    let texCoord = gl.getAttribLocation(program, 'aTextureCoord');
+    gl.enableVertexAttribArray(texCoord);
+    this.texCoordAttrib = texCoord;
     this.shaderProgram = program;
     return program;
+  }
+  initTextures() {
+    const gl = this.gl;
+    this.texture = gl.createTexture();
+    let image = new Image();
+    image.onload = () => {
+      this.handleTextureLoad(image, this.texture);
+    };
+    image.src = Texture;
+  }
+  handleTextureLoad(image, texture) {
+    const gl = this.gl;
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+    gl.generateMipmap(gl.TEXTURE_2D);
+    gl.bindTexture(gl.TEXTURE_2D, null);
   }
   initBuffers() {
     const gl = this.gl;
     let vertices = [
-      1.0, 1.0, 0.0,   1.0, 0.0, 0.0,
-      -1.0, 1.0, 0.0,  0.0, 1.0, 0.0,
-      1.0, -1.0, 0.0,  0.0, 0.0, 1.0,
-      -1.0, -1.0, 0.0, 1.0, 1.0, 1.0
+      // Position        // Color        // Texture
+      // Front
+      -1.0, -1.0,  1.0,  1.0, 0.0, 0.0,  0.0, 0.0,
+      1.0, -1.0,  1.0,  0.0, 1.0, 0.0,  1.0, 0.0,
+      1.0,  1.0,  1.0,  0.0, 0.0, 1.0,  1.0, 1.0,
+      -1.0,  1.0,  1.0,  1.0, 1.0, 1.0,  0.0, 1.0,
+      // Back
+      -1.0, -1.0, -1.0,  1.0, 0.0, 0.0,  1.0, 0.0,
+      1.0, -1.0, -1.0,  0.0, 1.0, 0.0,  0.0, 0.0,
+      1.0,  1.0, -1.0,  0.0, 0.0, 1.0,  0.0, 1.0,
+      -1.0,  1.0, -1.0,  1.0, 1.0, 1.0,  1.0, 1.0,
+      // Top
+      -1.0,  1.0, -1.0,  1.0, 0.0, 0.0,  0.0, 1.0,
+      -1.0,  1.0,  1.0,  0.0, 1.0, 0.0,  0.0, 0.0,
+      1.0,  1.0,  1.0,  0.0, 0.0, 1.0,  1.0, 0.0,
+      1.0,  1.0, -1.0,  1.0, 1.0, 1.0,  1.0, 1.0,
+      // Bottom
+      -1.0, -1.0, -1.0,  1.0, 0.0, 0.0,  0.0, 0.0,
+      -1.0, -1.0,  1.0,  0.0, 1.0, 0.0,  0.0, 1.0,
+      1.0, -1.0,  1.0,  0.0, 0.0, 1.0,  1.0, 1.0,
+      1.0, -1.0, -1.0,  1.0, 1.0, 1.0,  1.0, 0.0,
+      // Right
+      1.0, -1.0, -1.0,  1.0, 0.0, 0.0,  1.0, 0.0,
+      1.0,  1.0, -1.0,  0.0, 1.0, 0.0,  1.0, 1.0,
+      1.0,  1.0,  1.0,  0.0, 0.0, 1.0,  0.0, 1.0,
+      1.0, -1.0,  1.0,  1.0, 1.0, 1.0,  0.0, 0.0,
+      // Left
+      -1.0, -1.0, -1.0,  1.0, 0.0, 0.0,  0.0, 0.0,
+      -1.0,  1.0, -1.0,  0.0, 1.0, 0.0,  0.0, 1.0,
+      -1.0,  1.0,  1.0,  0.0, 0.0, 1.0,  1.0, 1.0,
+      -1.0, -1.0,  1.0,  1.0, 1.0, 1.0,  1.0, 0.0
     ];
     this.squareVert = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, this.squareVert);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+    console.log(vertices);
     let indices = [
-      0, 1, 3,
-      0, 2, 3
+      0, 1, 2,     0, 2, 3,    // front
+      4, 5, 6,     4, 6, 7,    // back
+      8, 9, 10,    8, 10, 11,  // top
+      12, 13, 14,  12, 14, 15, // bottom
+      16, 17, 18,  16, 18, 19, // right
+      20, 21, 22,  20, 22, 23  // left
     ];
     this.squareIndices = gl.createBuffer();
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.squareIndices);
@@ -102,25 +158,60 @@ export default class RenderView3D {
     // We can do OpenGL stuff now.. but now what?
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     // Init basic matrix
-    let perspective = mat4.create();
+    /*let perspective = mat4.create();
     mat4.perspective(perspective,
       45 * Math.PI / 180, this.canvas.width / this.canvas.height, 0.1, 100.0);
+    // mat4.ortho(perspective, -this.canvas.width / this.canvas.height * 2,
+    //   this.canvas.width / this.canvas.height * 2, -2, 2, 0.3, 1000);
     let identity = mat4.create();
     mat4.translate(identity, identity, [0, 0, -6]);
-    mat4.rotateZ(identity, identity, Math.sin(Date.now() / 400) * Math.PI);
-    mat4.rotateY(identity, identity, Math.cos(Date.now() / 400) * Math.PI);
-    // Load square
+    // mat4.rotateY(identity, identity, 180 / 180 * Math.PI);
+    mat4.rotateX(identity, identity, 30 / 180 * Math.PI);
+    // mat4.rotateX(identity, identity, Math.sin(Date.now() / 500) *
+    Math.PI / 4);
+    mat4.rotateY(identity, identity, (Date.now() / 400) % (Math.PI * 2));
+    */
+
+    // Load cube
     gl.bindBuffer(gl.ARRAY_BUFFER, this.squareVert);
-    gl.vertexAttribPointer(this.vertPosAttrib, 3, gl.FLOAT, false, 24, 0);
-    gl.vertexAttribPointer(this.vertColorAttrib, 3, gl.FLOAT, false, 24, 12);
+    gl.vertexAttribPointer(this.vertPosAttrib, 3, gl.FLOAT, false, 32, 0);
+    gl.vertexAttribPointer(this.vertColorAttrib, 3, gl.FLOAT, false, 32, 12);
+    gl.vertexAttribPointer(this.texCoordAttrib, 2, gl.FLOAT, false, 32, 24);
+
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, this.texture);
+    gl.uniform1i(gl.getUniformLocation(this.shaderProgram, 'uTexture'), 0);
 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.squareIndices);
 
-    var pUniform = gl.getUniformLocation(this.shaderProgram, 'uPMatrix');
-    gl.uniformMatrix4fv(pUniform, false, perspective);
-    var mvUniform = gl.getUniformLocation(this.shaderProgram, 'uMVMatrix');
-    gl.uniformMatrix4fv(mvUniform, false, identity);
+    let projectionMat = mat4.create();
+    mat4.perspective(projectionMat,
+      45 * Math.PI / 180, this.canvas.width / this.canvas.height, 0.1, 100.0);
 
-    gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0);
+    var pUniform = gl.getUniformLocation(this.shaderProgram, 'uProjectionMat');
+    gl.uniformMatrix4fv(pUniform, false, projectionMat);
+    let viewMat = mat4.create();
+    mat4.translate(viewMat, viewMat, [0, 0, -6]);
+    var vUniform = gl.getUniformLocation(this.shaderProgram, 'uViewMat');
+    gl.uniformMatrix4fv(vUniform, false, viewMat);
+
+    for (var i = 0; i < 10; ++i) {
+      let modelMat = mat4.create();
+      mat4.rotateZ(modelMat, modelMat, (Date.now() / 1000) % (Math.PI * 2));
+      mat4.translate(modelMat, modelMat, [
+        Math.cos(36 * Math.PI / 180 * i) * 6,
+        Math.sin(36 * Math.PI / 180 * i) * 6,
+        - 10,
+        0]);
+      mat4.rotateX(modelMat, modelMat, 30 / 180 * Math.PI);
+      mat4.rotateY(modelMat, modelMat, (Date.now() / 400) % (Math.PI * 2));
+      mat4.rotate(modelMat, modelMat, 20 * Math.PI / 180 * i,
+        [1.0, 0.3, 0.5]);
+
+      var mUniform = gl.getUniformLocation(this.shaderProgram, 'uModelMat');
+      gl.uniformMatrix4fv(mUniform, false, modelMat);
+
+      gl.drawElements(gl.TRIANGLES, 36, gl.UNSIGNED_SHORT, 0);
+    }
   }
 }
