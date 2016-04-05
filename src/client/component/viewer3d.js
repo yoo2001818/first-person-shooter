@@ -16,17 +16,19 @@ export default class Viewer3D extends Component {
     }
   }
   animate() {
-    this.renderView.render();
+    this.renderView.render(Date.now() - this.lastTime);
+    this.lastTime = Date.now();
     window.requestAnimationFrame(this.animate.bind(this));
   }
   initView() {
+    this.lastTime = Date.now();
     this.renderView = new RenderView(this.props.store, this.refs.canvas);
-    // this.renderView.setupEvents();
+    this.renderView.setupEvents();
     this.renderView.init();
-    this.renderView.render();
+    this.renderView.render(0);
   }
   componentDidUpdate() {
-    this.renderView.render();
+    this.renderView.render(0);
   }
   componentDidMount() {
     // Mount
@@ -41,6 +43,7 @@ export default class Viewer3D extends Component {
   }
   componentWillUnmount() {
     // Unmount cleanup
+    this.renderView.clearEvents();
     window.removeEventListener('resize', this.validateCallback);
     this.mounted = false;
   }

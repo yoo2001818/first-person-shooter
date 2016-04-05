@@ -78,8 +78,6 @@ export default class Viewport extends Component {
   componentWillMount() {
     const { store } = this.props;
     this.entities = store.systems.family.get(['pos', 'render']).entities;
-    console.log(this.entities);
-    console.log(store.state.entities);
   }
   componentWillReceiveProps(props) {
     const { store } = props;

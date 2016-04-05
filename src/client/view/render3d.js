@@ -17,9 +17,45 @@ export default class RenderView3D {
     this.store = store;
     this.entities = store.systems.family.get(['pos', 'render']).entities;
     store.subscribe('all', this.render.bind(this));
+    this.mouseX = 0;
+    this.mouseY = 0;
+    this.pitch = 0;
+    this.yaw = -Math.PI/2;
   }
-  // :P This isn't React, but still whatever.
+  clearEvents() {
+
+  }
   setupEvents() {
+    this.keys = {};
+    window.addEventListener('keydown', e => {
+      this.keys[e.keyCode] = true;
+    });
+    window.addEventListener('keyup', e => {
+      this.keys[e.keyCode] = false;
+    });
+    this.canvas.addEventListener('click', () => {
+      this.canvas.requestPointerLock = this.canvas.requestPointerLock ||
+                                       this.canvas.mozRequestPointerLock;
+      this.canvas.requestPointerLock();
+    });
+    this.canvas.addEventListener('mousemove', e => {
+      if (document.pointerLockElement || document.mozPointerLockElement) {
+        this.pitch = Math.max(-Math.PI / 2 + 0.001, Math.min(Math.PI / 2
+          - 0.001, this.pitch - e.movementY / 400));
+        this.yaw = this.yaw + e.movementX / 400;
+      }
+      let mouseX = e.layerX - this.canvas.width / 2;
+      let mouseY = e.layerY - this.canvas.height / 2;
+      if (Math.abs(this.mouseX - mouseX) < 100 &&
+        Math.abs(this.mouseY - mouseY) < 100
+      ) {
+        this.pitch = Math.max(-Math.PI / 2 + 0.001, Math.min(Math.PI / 2
+          - 0.001, this.pitch - (mouseY - this.mouseY) / 400));
+        this.yaw = this.yaw + (mouseX - this.mouseX) / 400;
+      }
+      this.mouseX = mouseX;
+      this.mouseY = mouseY;
+    });
   }
   loadShader(data, type) {
     const gl = this.gl;
@@ -74,9 +110,9 @@ export default class RenderView3D {
     let vertPos = gl.getAttribLocation(program, 'aVertexPosition');
     gl.enableVertexAttribArray(vertPos);
     this.vertPosAttrib = vertPos;
-    let vertColor = gl.getAttribLocation(program, 'aVertexColor');
-    gl.enableVertexAttribArray(vertColor);
-    this.vertColorAttrib = vertColor;
+    // let vertColor = gl.getAttribLocation(program, 'aVertexColor');
+    // gl.enableVertexAttribArray(vertColor);
+    // this.vertColorAttrib = vertColor;
     let texCoord = gl.getAttribLocation(program, 'aTextureCoord');
     gl.enableVertexAttribArray(texCoord);
     this.texCoordAttrib = texCoord;
@@ -101,6 +137,11 @@ export default class RenderView3D {
   }
   initBuffers() {
     const gl = this.gl;
+    this.camera = {
+      pos: vec3.fromValues(0, 0, 12),
+      front: vec3.fromValues(0, 0, -1),
+      up: vec3.fromValues(0, 1, 0)
+    };
     let vertices = [
       // Position        // Color        // Texture
       // Front
@@ -152,30 +193,44 @@ export default class RenderView3D {
       gl.STATIC_DRAW);
   }
   // OpenGL render point
-  render() {
+  render(delta) {
+    // 37: left, 38: up, 39: right, 40: down
+    // This should exist in here, but what the heck
+    const cameraSpeed = 0.02 * delta;
+    if (this.keys[38] || this.keys[87]) {
+      vec3.add(this.camera.pos, this.camera.pos,
+        vec3.scale(vec3.create(), this.camera.front, cameraSpeed));
+    }
+    if (this.keys[40] || this.keys[83]) {
+      vec3.add(this.camera.pos, this.camera.pos,
+        vec3.scale(vec3.create(), this.camera.front, -cameraSpeed));
+    }
+    let cameraCross = vec3.cross(vec3.create(),
+      this.camera.front, this.camera.up);
+    vec3.normalize(cameraCross, cameraCross);
+    if (this.keys[37] || this.keys[65]) {
+      vec3.add(this.camera.pos, this.camera.pos,
+        vec3.scale(vec3.create(), cameraCross, -cameraSpeed));
+    }
+    if (this.keys[39] || this.keys[68]) {
+      vec3.add(this.camera.pos, this.camera.pos,
+        vec3.scale(vec3.create(), cameraCross, cameraSpeed));
+    }
+    // Camera moving routine
+    vec3.normalize(this.camera.front, [
+      Math.cos(this.pitch) * Math.cos(this.yaw),
+      Math.sin(this.pitch),
+      Math.cos(this.pitch) * Math.sin(this.yaw)
+    ]);
     const gl = this.gl;
     if (!gl) return;
     // We can do OpenGL stuff now.. but now what?
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    // Init basic matrix
-    /*let perspective = mat4.create();
-    mat4.perspective(perspective,
-      45 * Math.PI / 180, this.canvas.width / this.canvas.height, 0.1, 100.0);
-    // mat4.ortho(perspective, -this.canvas.width / this.canvas.height * 2,
-    //   this.canvas.width / this.canvas.height * 2, -2, 2, 0.3, 1000);
-    let identity = mat4.create();
-    mat4.translate(identity, identity, [0, 0, -6]);
-    // mat4.rotateY(identity, identity, 180 / 180 * Math.PI);
-    mat4.rotateX(identity, identity, 30 / 180 * Math.PI);
-    // mat4.rotateX(identity, identity, Math.sin(Date.now() / 500) *
-    Math.PI / 4);
-    mat4.rotateY(identity, identity, (Date.now() / 400) % (Math.PI * 2));
-    */
 
     // Load cube
     gl.bindBuffer(gl.ARRAY_BUFFER, this.squareVert);
     gl.vertexAttribPointer(this.vertPosAttrib, 3, gl.FLOAT, false, 32, 0);
-    gl.vertexAttribPointer(this.vertColorAttrib, 3, gl.FLOAT, false, 32, 12);
+    // gl.vertexAttribPointer(this.vertColorAttrib, 3, gl.FLOAT, false, 32, 12);
     gl.vertexAttribPointer(this.texCoordAttrib, 2, gl.FLOAT, false, 32, 24);
 
     gl.activeTexture(gl.TEXTURE0);
@@ -190,27 +245,29 @@ export default class RenderView3D {
 
     var pUniform = gl.getUniformLocation(this.shaderProgram, 'uProjectionMat');
     gl.uniformMatrix4fv(pUniform, false, projectionMat);
+
+    let cameraLook = vec3.create();
+    vec3.add(cameraLook, this.camera.pos, this.camera.front);
     let viewMat = mat4.create();
-    mat4.translate(viewMat, viewMat, [0, 0, -6]);
+    mat4.lookAt(viewMat, this.camera.pos, cameraLook, this.camera.up);
     var vUniform = gl.getUniformLocation(this.shaderProgram, 'uViewMat');
     gl.uniformMatrix4fv(vUniform, false, viewMat);
 
-    for (var i = 0; i < 10; ++i) {
-      let modelMat = mat4.create();
-      mat4.rotateZ(modelMat, modelMat, (Date.now() / 1000) % (Math.PI * 2));
-      mat4.translate(modelMat, modelMat, [
-        Math.cos(36 * Math.PI / 180 * i) * 6,
-        Math.sin(36 * Math.PI / 180 * i) * 6,
-        - 10,
-        0]);
-      mat4.rotateX(modelMat, modelMat, 30 / 180 * Math.PI);
-      mat4.rotateY(modelMat, modelMat, (Date.now() / 400) % (Math.PI * 2));
-      mat4.rotate(modelMat, modelMat, 20 * Math.PI / 180 * i,
-        [1.0, 0.3, 0.5]);
+    let modelMat = mat4.create();
+    mat4.rotateZ(modelMat, modelMat, (Date.now() / 1000) % (Math.PI * 2));
+    // mat4.rotateX(modelMat, modelMat, 30 / 180 * Math.PI);
+    // mat4.rotateY(modelMat, modelMat, (Date.now() / 400) % (Math.PI * 2));
+    // mat4.rotate(modelMat, modelMat, 20 * Math.PI / 180 * i,
+    //  [1.0, 0.3, 0.5]);
 
-      var mUniform = gl.getUniformLocation(this.shaderProgram, 'uModelMat');
-      gl.uniformMatrix4fv(mUniform, false, modelMat);
+    var mUniform = gl.getUniformLocation(this.shaderProgram, 'uModelMat');
+    gl.uniformMatrix4fv(mUniform, false, modelMat);
 
+    var oUniform = gl.getUniformLocation(this.shaderProgram, 'uOffset');
+    for (let i = 0; i < 10; ++i) {
+      gl.uniform3f(oUniform, Math.cos(36 * Math.PI / 180 * i) * 6,
+      Math.sin(36 * Math.PI / 180 * i) * 6,
+      0);
       gl.drawElements(gl.TRIANGLES, 36, gl.UNSIGNED_SHORT, 0);
     }
   }
