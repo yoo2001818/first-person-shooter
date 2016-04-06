@@ -82,6 +82,7 @@ export default class RenderView3D {
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     // Enable depth testing
     gl.enable(gl.DEPTH_TEST);
+    // gl.enable(gl.CULL_FACE);
     // gl.enable(gl.BLEND);
     // gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
     // Near things obscure far things
