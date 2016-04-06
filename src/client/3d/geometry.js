@@ -28,7 +28,7 @@ export default class Geometry {
     if (this.vertices.length !== this.normals.length) {
       throw new Error('Vertices and normals array size does not match');
     }
-    if (this.vertices.length !== this.texCoords.length) {
+    if (this.vertices.length / 3 !== this.texCoords.length / 2) {
       throw new Error('Vertices and texture coords array size does not match');
     }
     // Create and bind the buffer.

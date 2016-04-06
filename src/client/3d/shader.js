@@ -66,7 +66,7 @@ export default class Shader {
     this.normals = this.getAttrib('aNormal');
     this.texCoords = this.getAttrib('aTexCoord');
 
-    this.transform = this.getAttrib('uTransform');
+    this.transform = this.getUniform('uTransform');
 
     return program;
   }
