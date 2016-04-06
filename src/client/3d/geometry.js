@@ -70,6 +70,8 @@ export default class Geometry {
     this.bufferId = null;
     this.indicesBufferId = null;
   }
+  // 'Dump' buffer to the shader attributes. Obviously this should be done
+  // after the shader's use method.
   use(shader) {
     const gl = this.gl;
     if (!this.isLoaded()) throw new Error('Geometry is not loaded');
@@ -85,6 +87,7 @@ export default class Geometry {
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indicesBufferId);
     }
   }
+  // Actually draw the vertices to the screen.
   draw() {
     const gl = this.gl;
     if (!this.isLoaded()) throw new Error('Geometry is not loaded');

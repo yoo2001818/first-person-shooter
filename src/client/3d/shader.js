@@ -9,6 +9,8 @@ export default class Shader {
     this.vertices = null;
     this.normals = null;
     this.texCoords = null;
+
+    this.transform = null;
   }
   loadShader(data, type) {
     const gl = this.gl;
@@ -35,6 +37,7 @@ export default class Shader {
   loadFragmentShader(data) {
     return this.loadShader(data, this.gl.FRAGMENT_SHADER);
   }
+  // TODO Maybe the function name should be 'load' to give consistency?
   link() {
     const gl = this.gl;
     // TODO: currently this doesn't support multiple shaders of one type,
@@ -62,16 +65,21 @@ export default class Shader {
     this.vertices = this.getAttrib('aPosition');
     this.normals = this.getAttrib('aNormal');
     this.texCoords = this.getAttrib('aTexCoord');
+
+    this.transform = this.getAttrib('uTransform');
+
     return program;
   }
   getProgramId() {
     return this.programId;
   }
+  // Enable shader program.
   use() {
     const gl = this.gl;
     if (!this.isLoaded()) throw new Error('Shader is not loaded');
     gl.useProgram(this.getProgramId());
     // Enable vertex arrays for the frequently used attributes,
+    // but maybe we can do this in linking stage? I'm not sure.
     if (this.vertices !== -1) gl.enableVertexAttribArray(this.vertices);
     if (this.normals !== -1) gl.enableVertexAttribArray(this.normals);
     if (this.texCoords !== -1) gl.enableVertexAttribArray(this.texCoords);
