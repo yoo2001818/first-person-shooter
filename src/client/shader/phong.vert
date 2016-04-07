@@ -6,10 +6,6 @@ uniform mat4 uTransform;
 uniform mat4 uModel;
 uniform mat3 uModelInvTransp;
 
-uniform lowp vec3 uObjectColor;
-uniform lowp vec3 uLightColor;
-uniform lowp vec3 uLightPos;
-
 varying lowp vec3 vFragPos;
 varying lowp vec3 vNormal;
 

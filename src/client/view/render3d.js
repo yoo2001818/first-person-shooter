@@ -123,20 +123,34 @@ export default class RenderView3D {
     this.light = light;
 
     let material = new PhongMaterial(gl, {
-      objectColor: new Float32Array([1.0, 0.0, 0.0])
+      ambient: new Float32Array([0.05 / 0.2, 0.05 / 0.2, 0]),
+      diffuse: new Float32Array([0.5, 0.5, 0.4]),
+      specular: new Float32Array([0.7, 0.7, 0.04]),
+      shininess: 10
     });
     let material2 = new PhongMaterial(gl, {
-      objectColor: new Float32Array([0.0, 1.0, 0.0])
+      ambient: new Float32Array([0.24725 / 0.2, 0.1995 / 0.2, 0.0745 / 0.2]),
+      diffuse: new Float32Array([0.75164, 0.60648, 0.22648]),
+      specular: new Float32Array([0.628281, 0.555802, 0.366065]),
+      shininess: 51.2
     });
     let material3 = new PhongMaterial(gl, {
       objectColor: new Float32Array([1.0, 0.46, 0.0])
     });
     let mesh = new Mesh(geometry, material);
     container.appendChild(mesh);
-    let mesh2 = new Mesh(geometry, material2);
-    mat4.rotateX(mesh2.matrix, mesh2.matrix, -45 * Math.PI / 180);
-    mat4.translate(mesh2.matrix, mesh2.matrix, [0, -3, 0]);
-    container.appendChild(mesh2);
+    for (let i = 0; i < 10; ++i) {
+      let mesh2 = new Mesh(geometry, material2);
+      mat4.rotateX(mesh2.matrix, mesh2.matrix, Math.random() * Math.PI * 4);
+      mat4.rotateY(mesh2.matrix, mesh2.matrix, Math.random() * Math.PI * 4);
+      mat4.rotateZ(mesh2.matrix, mesh2.matrix, Math.random() * Math.PI * 4);
+      mat4.translate(mesh2.matrix, mesh2.matrix, [
+        Math.random() * 20 - 10,
+        Math.random() * 20 - 10,
+        Math.random() * 20 - 10
+      ]);
+      container.appendChild(mesh2);
+    }
     let quad = new Mesh(quadGeom, material3);
     mat4.translate(quad.matrix, quad.matrix, [0, -7, 0]);
     mat4.scale(quad.matrix, quad.matrix, [60, 60, 60]);
@@ -177,11 +191,15 @@ export default class RenderView3D {
       Math.cos(this.pitch) * Math.sin(this.yaw)
     ]);
     // Rotate light around
-    let lightVec3 = new Float32Array([
+    /*let lightVec3 = new Float32Array([
       Math.cos(Date.now() / 700) * 10, 0, Math.sin(Date.now() / 700) * 10
+    ]);*/
+    let lightVec4 = new Float32Array([
+      3, -3, 0, 1
+      // 0, 1, 0, 0
     ]);
     mat4.identity(this.light.matrix);
-    mat4.translate(this.light.matrix, this.light.matrix, lightVec3);
+    mat4.translate(this.light.matrix, this.light.matrix, lightVec4);
     mat4.scale(this.light.matrix, this.light.matrix, [0.2, 0.2, 0.2]);
     // Calculate camera vectors
     let projectionMat = mat4.create();
@@ -196,8 +214,13 @@ export default class RenderView3D {
     // We can do OpenGL stuff now.. but now what?
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     this.container.render(gl, vpMat, {
-      lightPos: lightVec3,
-      lightColor: new Float32Array([1, 1, 1]),
+      light: {
+        position: lightVec4,
+        ambient: new Float32Array([0.2, 0.2, 0.2]),
+        diffuse: new Float32Array([1, 1, 1]),
+        specular: new Float32Array([1, 1, 1]),
+        intensity: new Float32Array([1.0, 0.0014, 0.000007])
+      },
       viewPos: this.camera.pos
     });
   }
