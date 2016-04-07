@@ -16,7 +16,9 @@ export default class PhongMaterial extends Material {
         ambient: PHONG_SHADER.getUniform('uLight.ambient'),
         diffuse: PHONG_SHADER.getUniform('uLight.diffuse'),
         specular: PHONG_SHADER.getUniform('uLight.specular'),
-        intensity: PHONG_SHADER.getUniform('uLight.intensity')
+        attenuation: PHONG_SHADER.getUniform('uLight.attenuation'),
+        coneDirection: PHONG_SHADER.getUniform('uLight.coneDirection'),
+        coneCutOff: PHONG_SHADER.getUniform('uLight.coneCutOff')
       };
       PHONG_SHADER.material = {
         ambient: PHONG_SHADER.getUniform('uMaterial.ambient'),
@@ -39,8 +41,15 @@ export default class PhongMaterial extends Material {
     gl.uniform3fv(this.shader.light.diffuse, context.light.diffuse);
     gl.uniform3fv(this.shader.light.specular, context.light.specular);
 
-    gl.uniform3fv(this.shader.light.intensity, context.light.intensity);
+    gl.uniform1f(this.shader.light.attenuation, context.light.attenuation);
 
+    if (context.light.coneCutOff) {
+      gl.uniform3fv(this.shader.light.coneDirection,
+        context.light.coneDirection);
+      gl.uniform2fv(this.shader.light.coneCutOff, context.light.coneCutOff);
+    } else {
+      gl.uniform2f(this.shader.light.coneCutOff, 0, 0);
+    }
     gl.uniform3fv(this.shader.material.ambient, this.options.ambient);
     gl.uniform3fv(this.shader.material.diffuse, this.options.diffuse);
     gl.uniform3fv(this.shader.material.specular, this.options.specular);

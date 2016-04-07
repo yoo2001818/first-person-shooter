@@ -15,7 +15,10 @@ struct Light {
   lowp vec3 diffuse;
   lowp vec3 specular;
 
-  lowp vec3 intensity;
+  lowp float attenuation;
+
+  lowp vec2 coneCutOff;
+  lowp vec3 coneDirection;
 };
 
 uniform Material uMaterial;
@@ -31,11 +34,8 @@ void main(void) {
   lowp float distance = length(lightDir);
   lightDir = lightDir / distance;
 
-  // x: constant, y: linear, z: quadratic
-  lowp float attenuation = 1.0 / (uLight.intensity.x +
-    uLight.intensity.y * distance +
-    uLight.intensity.z * (distance * distance));
-
+  lowp float attenuation = 1.0 / ( 1.0 +
+    uLight.attenuation * (distance * distance) * uLight.position.w);
 
   lowp float lambertian = max(dot(vNormal, lightDir), 0.0);
   lowp float spec = 0.0;
@@ -51,6 +51,15 @@ void main(void) {
   lowp vec3 ambient = uMaterial.ambient * uLight.ambient;
   lowp vec3 diffuse = lambertian * uMaterial.diffuse * uLight.diffuse;
   lowp vec3 specular = spec * uMaterial.specular * uLight.specular;
+
+  if (uLight.coneCutOff.y > 0.0) {
+    lowp float theta = dot(lightDir, normalize(-uLight.coneDirection));
+    lowp float epsilon = uLight.coneCutOff.x - uLight.coneCutOff.y;
+    lowp float intensity = clamp((theta - uLight.coneCutOff.y) / epsilon,
+      0.0, 1.0);
+    diffuse *= intensity;
+    specular *= intensity;
+  }
 
   lowp vec3 result = (ambient + diffuse + specular) * attenuation;
   gl_FragColor = vec4(result, 1.0);

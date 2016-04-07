@@ -135,7 +135,10 @@ export default class RenderView3D {
       shininess: 51.2
     });
     let material3 = new PhongMaterial(gl, {
-      objectColor: new Float32Array([1.0, 0.46, 0.0])
+      ambient: new Float32Array([0.1745 / 0.2, 0.01175 / 0.2, 0.01175 / 0.2]),
+      diffuse: new Float32Array([0.61424, 0.04136, 0.04136]),
+      specular: new Float32Array([0.727811, 0.626959, 0.626959]),
+      shininess: 76.8
     });
     let mesh = new Mesh(geometry, material);
     container.appendChild(mesh);
@@ -152,7 +155,7 @@ export default class RenderView3D {
       container.appendChild(mesh2);
     }
     let quad = new Mesh(quadGeom, material3);
-    mat4.translate(quad.matrix, quad.matrix, [0, -7, 0]);
+    mat4.translate(quad.matrix, quad.matrix, [0, -10, 0]);
     mat4.scale(quad.matrix, quad.matrix, [60, 60, 60]);
     mat4.rotateX(quad.matrix, quad.matrix, -90 * Math.PI / 180);
     // container.appendChild(quad);
@@ -172,6 +175,14 @@ export default class RenderView3D {
     if (this.keys[40] || this.keys[83]) {
       vec3.add(this.camera.pos, this.camera.pos,
         vec3.scale(vec3.create(), this.camera.front, -cameraSpeed));
+    }
+    if (this.keys[69]) {
+      vec3.add(this.camera.pos, this.camera.pos,
+        vec3.scale(vec3.create(), this.camera.up, cameraSpeed));
+    }
+    if (this.keys[81]) {
+      vec3.add(this.camera.pos, this.camera.pos,
+        vec3.scale(vec3.create(), this.camera.up, -cameraSpeed));
     }
     let cameraCross = vec3.cross(vec3.create(),
       this.camera.front, this.camera.up);
@@ -216,10 +227,18 @@ export default class RenderView3D {
     this.container.render(gl, vpMat, {
       light: {
         position: lightVec4,
+        // position: new Float32Array([
+        //  this.camera.pos[0], this.camera.pos[1], this.camera.pos[2], 1.0]),
         ambient: new Float32Array([0.2, 0.2, 0.2]),
         diffuse: new Float32Array([1, 1, 1]),
         specular: new Float32Array([1, 1, 1]),
-        intensity: new Float32Array([1.0, 0.0014, 0.000007])
+        attenuation: 0.0014
+        // coneDirection: new Float32Array([1, 1, 1]),
+        /* coneDirection: this.camera.front,
+        coneCutOff: new Float32Array([
+          Math.cos(12.5 / 180 * Math.PI),
+          Math.cos(17.5 / 180 * Math.PI)
+        ]) */
       },
       viewPos: this.camera.pos
     });
