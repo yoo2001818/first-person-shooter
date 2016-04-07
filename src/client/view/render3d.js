@@ -6,7 +6,7 @@ import QuadGeometry from '../3d/quadGeometry';
 import PhongMaterial from '../3d/phongMaterial';
 import Material from '../3d/material';
 import Shader from '../3d/shader';
-// import Texture from '../asset/texture.png';
+import Texture from '../3d/texture';
 
 export default class RenderView3D {
   constructor(store, canvas) {
@@ -126,13 +126,21 @@ export default class RenderView3D {
       ambient: new Float32Array([0.05 / 0.2, 0.05 / 0.2, 0]),
       diffuse: new Float32Array([0.5, 0.5, 0.4]),
       specular: new Float32Array([0.7, 0.7, 0.04]),
-      shininess: 10
+      shininess: 1
     });
+
+    let texture = Texture.fromImage(gl, require('../asset/texture.png'));
+    let normalTex = Texture.fromImage(gl,
+      require('../asset/texture_normal.jpg'));
+    // let texture2 = Texture.fromImage(gl, require('../asset/texture2.png'));
     let material2 = new PhongMaterial(gl, {
-      ambient: new Float32Array([0.24725 / 0.2, 0.1995 / 0.2, 0.0745 / 0.2]),
-      diffuse: new Float32Array([0.75164, 0.60648, 0.22648]),
-      specular: new Float32Array([0.628281, 0.555802, 0.366065]),
-      shininess: 51.2
+      diffuseMap: texture,
+      normalMap: normalTex,
+      // specularMap: texture2,
+      // ambient: new Float32Array([0.24725 / 0.2, 0.1995 / 0.2, 0.0745 / 0.2]),
+      // diffuse: new Float32Array([0.75164, 0.60648, 0.22648]),
+      specular: new Float32Array([0.7, 0.7, 0.75]),
+      shininess: 30
     });
     let material3 = new PhongMaterial(gl, {
       ambient: new Float32Array([0.1745 / 0.2, 0.01175 / 0.2, 0.01175 / 0.2]),
@@ -234,11 +242,11 @@ export default class RenderView3D {
         specular: new Float32Array([1, 1, 1]),
         attenuation: 0.0014
         // coneDirection: new Float32Array([1, 1, 1]),
-        /* coneDirection: this.camera.front,
+        /*coneDirection: this.camera.front,
         coneCutOff: new Float32Array([
           Math.cos(12.5 / 180 * Math.PI),
           Math.cos(17.5 / 180 * Math.PI)
-        ]) */
+        ])*/
       },
       viewPos: this.camera.pos
     });

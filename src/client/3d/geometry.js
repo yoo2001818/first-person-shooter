@@ -38,14 +38,17 @@ export default class Geometry {
     // Assign the buffer.
     // Since this class assumes the geometry is buffered only once, it is right
     // to use STATIC_DRAW.
-    // Each vertex consumes 32 bytes (that's a lot). Every float is 4 bytes,
+    // Each vertex consumes 44 bytes (that's a lot). Every float is 4 bytes,
     // and there is position (vec3), texCoords (vec2), normals (vec3).
-    gl.bufferData(gl.ARRAY_BUFFER, vertexCount * 32, gl.STATIC_DRAW);
+    // plus tangent (vec3).
+    gl.bufferData(gl.ARRAY_BUFFER, vertexCount * 44, gl.STATIC_DRAW);
     // Upload data to the buffer.
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vertices);
     gl.bufferSubData(gl.ARRAY_BUFFER, this.getVertexCount() * 12,
       this.normals);
     gl.bufferSubData(gl.ARRAY_BUFFER, this.getVertexCount() * 24,
+      this.tangents);
+    gl.bufferSubData(gl.ARRAY_BUFFER, this.getVertexCount() * 36,
       this.texCoords);
     // Unbind buffer.
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
@@ -82,9 +85,13 @@ export default class Geometry {
       gl.vertexAttribPointer(shader.normals, 3, gl.FLOAT, false, 12,
         this.getVertexCount() * 12);
     }
+    if (shader.tangents !== -1) {
+      gl.vertexAttribPointer(shader.tangents, 3, gl.FLOAT, false, 12,
+        this.getVertexCount() * 24);
+    }
     if (shader.texCoords !== -1) {
       gl.vertexAttribPointer(shader.texCoords, 2, gl.FLOAT, false, 8,
-        this.getVertexCount() * 24);
+        this.getVertexCount() * 36);
     }
     if (this.indicesBufferId !== null) {
       // Bind indices buffer too

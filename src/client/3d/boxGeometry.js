@@ -1,4 +1,4 @@
-import { vec3 } from 'gl-matrix';
+import { vec2, vec3 } from 'gl-matrix';
 import Geometry from './geometry';
 
 export default class BoxGeometry extends Geometry {
@@ -7,6 +7,7 @@ export default class BoxGeometry extends Geometry {
     this.vertices = BoxGeometry.VERTICES;
     this.normals = BoxGeometry.NORMALS;
     this.texCoords = BoxGeometry.TEXCOORDS;
+    this.tangents = BoxGeometry.TANGENTS;
     this.indices = BoxGeometry.INDICES;
   }
 }
@@ -76,5 +77,28 @@ for (let i = 0; i < 6; ++i) {
   vec3.cross(uv, p1, p2);
   for (let j = 0; j < 4; ++j) {
     BoxGeometry.NORMALS.set(uv, i * 12 + j * 3);
+  }
+}
+
+// Then calculate tangent map.
+BoxGeometry.TANGENTS = new Float32Array(3 * 4 * 6);
+for (let i = 0; i < 6; ++i) {
+  let o = BoxGeometry.VERTICES.slice(i * 12, i * 12 + 3);
+  let edge1 = vec3.create();
+  let edge2 = vec3.create();
+  vec3.subtract(edge1, BoxGeometry.VERTICES.slice(i * 12 + 3, i * 12 + 6), o);
+  vec3.subtract(edge2, BoxGeometry.VERTICES.slice(i * 12 + 6, i * 12 + 9), o);
+  let t = BoxGeometry.TEXCOORDS.slice(i * 8, i * 8 + 2);
+  let uv1 = vec3.create();
+  let uv2 = vec3.create();
+  vec2.subtract(uv1, BoxGeometry.TEXCOORDS.slice(i * 8 + 2, i * 8 + 4), t);
+  vec2.subtract(uv2, BoxGeometry.TEXCOORDS.slice(i * 8 + 4, i * 8 + 6), t);
+  let f = 1 / (uv1[0] * uv2[1] - uv2[0] * uv1[1]);
+  let tangent = vec3.create();
+  tangent[0] = f * (uv2[1] * edge1[0] - uv1[1] * edge2[0]);
+  tangent[1] = f * (uv2[1] * edge1[1] - uv1[1] * edge2[1]);
+  tangent[2] = f * (uv2[1] * edge1[2] - uv1[1] * edge2[2]);
+  for (let j = 0; j < 4; ++j) {
+    BoxGeometry.TANGENTS.set(tangent, i * 12 + j * 3);
   }
 }

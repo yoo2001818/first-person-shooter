@@ -65,6 +65,7 @@ export default class Shader {
     this.vertices = this.getAttrib('aPosition');
     this.normals = this.getAttrib('aNormal');
     this.texCoords = this.getAttrib('aTexCoord');
+    this.tangents = this.getAttrib('aTangent');
 
     this.transform = this.getUniform('uTransform');
     this.model = this.getUniform('uModel');
@@ -85,6 +86,7 @@ export default class Shader {
     if (this.vertices !== -1) gl.enableVertexAttribArray(this.vertices);
     if (this.normals !== -1) gl.enableVertexAttribArray(this.normals);
     if (this.texCoords !== -1) gl.enableVertexAttribArray(this.texCoords);
+    if (this.tangents !== -1) gl.enableVertexAttribArray(this.tangents);
   }
   delete() {
     this.gl.deleteProgram(this.getProgramId());
