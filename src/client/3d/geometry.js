@@ -78,10 +78,14 @@ export default class Geometry {
     // Bind buffer and apply it to the attributes
     gl.bindBuffer(gl.ARRAY_BUFFER, this.bufferId);
     gl.vertexAttribPointer(shader.vertices, 3, gl.FLOAT, false, 12, 0);
-    gl.vertexAttribPointer(shader.normals, 3, gl.FLOAT, false, 12,
-      this.getVertexCount() * 12);
-    gl.vertexAttribPointer(shader.texCoords, 2, gl.FLOAT, false, 8,
-      this.getVertexCount() * 24);
+    if (shader.normals !== -1) {
+      gl.vertexAttribPointer(shader.normals, 3, gl.FLOAT, false, 12,
+        this.getVertexCount() * 12);
+    }
+    if (shader.texCoords !== -1) {
+      gl.vertexAttribPointer(shader.texCoords, 2, gl.FLOAT, false, 8,
+        this.getVertexCount() * 24);
+    }
     if (this.indicesBufferId !== null) {
       // Bind indices buffer too
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indicesBufferId);

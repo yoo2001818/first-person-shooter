@@ -1,10 +1,11 @@
 import { mat4, vec3 } from 'gl-matrix';
-import Shader from '../3d/shader';
 import Container from '../3d/container';
 import Mesh from '../3d/mesh';
 import BoxGeometry from '../3d/boxGeometry';
 import QuadGeometry from '../3d/quadGeometry';
+import PhongMaterial from '../3d/phongMaterial';
 import Material from '../3d/material';
+import Shader from '../3d/shader';
 // import Texture from '../asset/texture.png';
 
 export default class RenderView3D {
@@ -74,7 +75,7 @@ export default class RenderView3D {
     const gl = this.gl;
     if (!gl) return;
     // Set clear color to black, fully opaque
-    gl.clearColor(46 / 255, 60 / 255, 69 / 255, 1.0);
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
     // Enable depth testing
     gl.enable(gl.DEPTH_TEST);
     gl.enable(gl.CULL_FACE);
@@ -94,27 +95,53 @@ export default class RenderView3D {
       front: vec3.fromValues(0, 0, -1),
       up: vec3.fromValues(0, 1, 0)
     };
-    let shader = new Shader(gl);
-    shader.loadVertexShader(require('../shader/test.vert'));
-    shader.loadFragmentShader(require('../shader/test.frag'));
-    shader.link();
-    let material = new Material(gl, shader);
+
+    let container = new Container();
+
     let geometry = new BoxGeometry(gl);
     geometry.load();
     let quadGeom = new QuadGeometry(gl);
     quadGeom.load();
-    let container = new Container();
+
+    // Add light material
+    let lightShader = new Shader(gl);
+    lightShader.loadVertexShader(require('../shader/light.vert'));
+    lightShader.loadFragmentShader(require('../shader/light.frag'));
+    lightShader.link();
+    let lightMaterial = new Material(gl, lightShader);
+    lightMaterial.use = function(geometry) {
+      Material.prototype.use.call(this, geometry);
+      const gl = this.gl;
+      gl.uniform3fv(this.shader.getUniform('uColor'), this.color);
+    };
+    lightMaterial.color = new Float32Array([1, 1, 1]);
+
+    let light = new Mesh(geometry, lightMaterial);
+    container.appendChild(light);
+    mat4.translate(light.matrix, light.matrix, [3, -3, 0]);
+    mat4.scale(light.matrix, light.matrix, [0.2, 0.2, 0.2]);
+    this.light = light;
+
+    let material = new PhongMaterial(gl, {
+      objectColor: new Float32Array([1.0, 0.0, 0.0])
+    });
+    let material2 = new PhongMaterial(gl, {
+      objectColor: new Float32Array([0.0, 1.0, 0.0])
+    });
+    let material3 = new PhongMaterial(gl, {
+      objectColor: new Float32Array([1.0, 0.46, 0.0])
+    });
     let mesh = new Mesh(geometry, material);
     container.appendChild(mesh);
-    let mesh2 = new Mesh(geometry, material);
+    let mesh2 = new Mesh(geometry, material2);
     mat4.rotateX(mesh2.matrix, mesh2.matrix, -45 * Math.PI / 180);
     mat4.translate(mesh2.matrix, mesh2.matrix, [0, -3, 0]);
     container.appendChild(mesh2);
-    let quad = new Mesh(quadGeom, material);
+    let quad = new Mesh(quadGeom, material3);
     mat4.translate(quad.matrix, quad.matrix, [0, -7, 0]);
-    mat4.scale(quad.matrix, quad.matrix, [1, 1, 1]);
+    mat4.scale(quad.matrix, quad.matrix, [60, 60, 60]);
     mat4.rotateX(quad.matrix, quad.matrix, -90 * Math.PI / 180);
-    container.appendChild(quad);
+    // container.appendChild(quad);
     this.container = container;
   }
   // OpenGL render point
@@ -149,6 +176,13 @@ export default class RenderView3D {
       Math.sin(this.pitch),
       Math.cos(this.pitch) * Math.sin(this.yaw)
     ]);
+    // Rotate light around
+    let lightVec3 = new Float32Array([
+      Math.cos(Date.now() / 700) * 10, 0, Math.sin(Date.now() / 700) * 10
+    ]);
+    mat4.identity(this.light.matrix);
+    mat4.translate(this.light.matrix, this.light.matrix, lightVec3);
+    mat4.scale(this.light.matrix, this.light.matrix, [0.2, 0.2, 0.2]);
     // Calculate camera vectors
     let projectionMat = mat4.create();
     mat4.perspective(projectionMat,
@@ -161,6 +195,10 @@ export default class RenderView3D {
     mat4.multiply(vpMat, projectionMat, viewMat);
     // We can do OpenGL stuff now.. but now what?
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    this.container.render(gl, vpMat);
+    this.container.render(gl, vpMat, {
+      lightPos: lightVec3,
+      lightColor: new Float32Array([1, 1, 1]),
+      viewPos: this.camera.pos
+    });
   }
 }
