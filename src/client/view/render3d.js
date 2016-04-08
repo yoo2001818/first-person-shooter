@@ -128,20 +128,29 @@ export default class RenderView3D {
       specular: new Float32Array([0.7, 0.7, 0.04]),
       shininess: 1
     });
-
-    let texture = Texture.fromImage(gl, require('../asset/texture.png'));
+    let texture = Texture.fromImage(gl, require('../asset/texture2.png'));
+    let normalTex = Texture.fromImage(gl,
+      require('../asset/texture2_normal.png'));
+    let depthTex = Texture.fromImage(gl,
+      require('../asset/texture2_depth.png'));
+    /*let texture = Texture.fromImage(gl,
+      require('../asset/texture_diffuse.jpg'));
     let normalTex = Texture.fromImage(gl,
       require('../asset/texture_normal.jpg'));
-    // let texture2 = Texture.fromImage(gl, require('../asset/texture2.png'));
+    let depthTex = Texture.fromImage(gl,
+      require('../asset/texture_depth.jpg'));*/
     let material2 = new PhongMaterial(gl, {
       diffuseMap: texture,
       normalMap: normalTex,
+      depthMap: depthTex,
+      depthMapScale: new Float32Array([0.1, 1.5]),
       // specularMap: texture2,
       // ambient: new Float32Array([0.24725 / 0.2, 0.1995 / 0.2, 0.0745 / 0.2]),
       // diffuse: new Float32Array([0.75164, 0.60648, 0.22648]),
-      specular: new Float32Array([0.7, 0.7, 0.75]),
+      specular: new Float32Array([0.5, 0.5, 0.55]),
       shininess: 30
     });
+    this.material2 = material2;
     let material3 = new PhongMaterial(gl, {
       ambient: new Float32Array([0.1745 / 0.2, 0.01175 / 0.2, 0.01175 / 0.2]),
       diffuse: new Float32Array([0.61424, 0.04136, 0.04136]),

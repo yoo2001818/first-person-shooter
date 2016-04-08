@@ -12,6 +12,7 @@ export default class PhongMaterial extends Material {
       PHONG_SHADER.link();
       PHONG_SHADER.viewPos = PHONG_SHADER.getUniform('uViewPos');
       PHONG_SHADER.useNormalMap = PHONG_SHADER.getUniform('uUseNormalMap');
+      PHONG_SHADER.depthMapScale = PHONG_SHADER.getUniform('uDepthMapScale');
       PHONG_SHADER.light = {
         position: PHONG_SHADER.getUniform('uLight.position'),
         ambient: PHONG_SHADER.getUniform('uLight.ambient'),
@@ -28,7 +29,8 @@ export default class PhongMaterial extends Material {
         shininess: PHONG_SHADER.getUniform('uMaterial.shininess'),
         diffuseMap: PHONG_SHADER.getUniform('uMaterial.diffuseMap'),
         specularMap: PHONG_SHADER.getUniform('uMaterial.specularMap'),
-        normalMap: PHONG_SHADER.getUniform('uMaterial.normalMap')
+        normalMap: PHONG_SHADER.getUniform('uMaterial.normalMap'),
+        depthMap: PHONG_SHADER.getUniform('uMaterial.depthMap')
       };
     }
     super(context, PHONG_SHADER);
@@ -82,6 +84,14 @@ export default class PhongMaterial extends Material {
       gl.uniform1i(this.shader.useNormalMap, 1);
     } else {
       gl.uniform1i(this.shader.useNormalMap, 0);
+    }
+    if (this.options.depthMap != null) {
+      // Use texture #3
+      gl.uniform1i(this.shader.material.depthMap, 3);
+      this.options.depthMap.use(3);
+      gl.uniform2fv(this.shader.depthMapScale, this.options.depthMapScale);
+    } else {
+      gl.uniform2f(this.shader.depthMapScale, 0, 0);
     }
   }
 }
