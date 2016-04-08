@@ -20,5 +20,6 @@ export default class Mesh extends Object3D {
         invMat);
     }
     this.geometry.draw();
+    this.geometry.cleanUp();
   }
 }

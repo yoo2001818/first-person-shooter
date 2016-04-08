@@ -1,3 +1,5 @@
+let SHADER_ID = 0;
+
 export default class Shader {
   constructor(context) {
     this.gl = context;
@@ -11,6 +13,8 @@ export default class Shader {
     this.texCoords = null;
 
     this.transform = null;
+
+    this.id = null;
   }
   loadShader(data, type) {
     const gl = this.gl;
@@ -61,6 +65,8 @@ export default class Shader {
     gl.deleteShader(this.fragmentShader);
     // Set program ID
     this.programId = program;
+    // Set user-scope ID
+    this.id = SHADER_ID ++;
     // Buffer frequently used attributes, uniforms.
     this.vertices = this.getAttrib('aPosition');
     this.normals = this.getAttrib('aNormal');
@@ -73,6 +79,12 @@ export default class Shader {
 
     return program;
   }
+  // Since WebGL program related methods return opaque class, WebGLProgram,
+  // It's not possible to use programId as an integer. So we implement another
+  // ID from the user side. We should avoid this however.
+  getId() {
+    return this.id;
+  }
   getProgramId() {
     return this.programId;
   }
@@ -81,12 +93,6 @@ export default class Shader {
     const gl = this.gl;
     if (!this.isLoaded()) throw new Error('Shader is not loaded');
     gl.useProgram(this.getProgramId());
-    // Enable vertex arrays for the frequently used attributes,
-    // but maybe we can do this in linking stage? I'm not sure.
-    if (this.vertices !== -1) gl.enableVertexAttribArray(this.vertices);
-    if (this.normals !== -1) gl.enableVertexAttribArray(this.normals);
-    if (this.texCoords !== -1) gl.enableVertexAttribArray(this.texCoords);
-    if (this.tangents !== -1) gl.enableVertexAttribArray(this.tangents);
   }
   delete() {
     this.gl.deleteProgram(this.getProgramId());

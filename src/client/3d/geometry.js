@@ -1,6 +1,7 @@
 export default class Geometry {
   constructor(context) {
     this.gl = context;
+    this.vaoExt = null;
 
     this.vertices = null;
     this.normals = null;
@@ -10,6 +11,8 @@ export default class Geometry {
 
     this.bufferId = null;
     this.indicesBufferId = null;
+
+    this.vaoId = [];
   }
   getVertexCount() {
     // While vertex array must be multiple of 3, it'd be good idea to
@@ -64,6 +67,8 @@ export default class Geometry {
       this.indicesType = gl.UNSIGNED_SHORT;
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
     }
+    // Enable VAO extension if possible.
+    this.vaoExt = gl.getExtension('OES_vertex_array_object');
   }
   unload() {
     const gl = this.gl;
@@ -72,12 +77,45 @@ export default class Geometry {
     gl.deleteBuffer(this.indicesBufferId);
     this.bufferId = null;
     this.indicesBufferId = null;
+    if (this.vaoExt) {
+      this.vaoId.forEach(vao => {
+        this.vaoExt.deleteVertexArrayOES(vao);
+      });
+    }
   }
   // 'Dump' buffer to the shader attributes. Obviously this should be done
   // after the shader's use method.
   use(shader) {
     const gl = this.gl;
     if (!this.isLoaded()) throw new Error('Geometry is not loaded');
+    // VAO extension section
+    if (this.vaoExt) {
+      let shaderId = shader.getId();
+      if (this.vaoId[shaderId]) {
+        // If VAO exists, just set the VAO to that.
+        this.vaoExt.bindVertexArrayOES(this.vaoId[shaderId]);
+        return;
+      } else {
+        // If VAO doesn't exists, create and bind VAO.
+        this.vaoId[shaderId] = this.vaoExt.createVertexArrayOES();
+        this.vaoExt.bindVertexArrayOES(this.vaoId[shaderId]);
+        // Further buffer binds will be recorded on this VAO.
+        console.log('Create VAO', shaderId);
+      }
+    }
+    // Enable vertex arrays
+    if (shader.vertices !== -1) {
+      gl.enableVertexAttribArray(shader.vertices);
+    }
+    if (shader.normals !== -1) {
+      gl.enableVertexAttribArray(shader.normals);
+    }
+    if (shader.texCoords !== -1) {
+      gl.enableVertexAttribArray(shader.texCoords);
+    }
+    if (shader.tangents !== -1) {
+      gl.enableVertexAttribArray(shader.tangents);
+    }
     // Bind buffer and apply it to the attributes
     gl.bindBuffer(gl.ARRAY_BUFFER, this.bufferId);
     gl.vertexAttribPointer(shader.vertices, 3, gl.FLOAT, false, 12, 0);
@@ -114,7 +152,11 @@ export default class Geometry {
   cleanUp() {
     // Clean up the buffers after use (not really required though)
     const gl = this.gl;
-    gl.bindBuffer(gl.ARRAY_BUFFER, null);
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+    if (this.vaoExt) {
+      this.vaoExt.bindVertexArrayOES(null);
+    } else {
+      gl.bindBuffer(gl.ARRAY_BUFFER, null);
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+    }
   }
 }
