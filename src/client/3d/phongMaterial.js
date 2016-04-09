@@ -13,14 +13,15 @@ export default class PhongMaterial extends Material {
       PHONG_SHADER.viewPos = PHONG_SHADER.getUniform('uViewPos');
       PHONG_SHADER.useNormalMap = PHONG_SHADER.getUniform('uUseNormalMap');
       PHONG_SHADER.depthMapScale = PHONG_SHADER.getUniform('uDepthMapScale');
+      PHONG_SHADER.lightSize = PHONG_SHADER.getUniform('uLightSize');
       PHONG_SHADER.light = {
-        position: PHONG_SHADER.getUniform('uLight.position'),
-        ambient: PHONG_SHADER.getUniform('uLight.ambient'),
-        diffuse: PHONG_SHADER.getUniform('uLight.diffuse'),
-        specular: PHONG_SHADER.getUniform('uLight.specular'),
-        attenuation: PHONG_SHADER.getUniform('uLight.attenuation'),
-        coneDirection: PHONG_SHADER.getUniform('uLight.coneDirection'),
-        coneCutOff: PHONG_SHADER.getUniform('uLight.coneCutOff')
+        position: PHONG_SHADER.getUniform('uLight[0].position'),
+        ambient: PHONG_SHADER.getUniform('uLight[0].ambient'),
+        diffuse: PHONG_SHADER.getUniform('uLight[0].diffuse'),
+        specular: PHONG_SHADER.getUniform('uLight[0].specular'),
+        attenuation: PHONG_SHADER.getUniform('uLight[0].attenuation'),
+        coneDirection: PHONG_SHADER.getUniform('uLight[0].coneDirection'),
+        coneCutOff: PHONG_SHADER.getUniform('uLight[0].coneCutOff')
       };
       PHONG_SHADER.material = {
         ambient: PHONG_SHADER.getUniform('uMaterial.ambient'),
@@ -40,6 +41,8 @@ export default class PhongMaterial extends Material {
     super.use(geometry, context);
     const gl = this.gl;
     gl.uniform3fv(this.shader.viewPos, context.viewPos);
+
+    gl.uniform1i(this.shader.lightSize, 1);
 
     gl.uniform4fv(this.shader.light.position, context.light.position);
     gl.uniform3fv(this.shader.light.ambient, context.light.ambient);
