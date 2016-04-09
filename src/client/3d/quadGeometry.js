@@ -74,6 +74,6 @@ for (let i = 0; i < 2; ++i) {
   tangent[1] = f * (uv2[1] * edge1[1] - uv1[1] * edge2[1]);
   tangent[2] = f * (uv2[1] * edge1[2] - uv1[1] * edge2[2]);
   for (let j = 0; j < 4; ++j) {
-    QuadGeometry.TANGENTS.set(tangent, i * 8 + j * 2);
+    QuadGeometry.TANGENTS.set(tangent, i * 12 + j * 3);
   }
 }

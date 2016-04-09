@@ -128,17 +128,17 @@ export default class RenderView3D {
       specular: new Float32Array([0.7, 0.7, 0.04]),
       shininess: 1
     });
-    let texture = Texture.fromImage(gl, require('../asset/texture2.png'));
+    /*let texture = Texture.fromImage(gl, require('../asset/texture2.png'));
     let normalTex = Texture.fromImage(gl,
       require('../asset/texture2_normal.png'));
     let depthTex = Texture.fromImage(gl,
-      require('../asset/texture2_depth.png'));
-    /*let texture = Texture.fromImage(gl,
+      require('../asset/texture2_depth.png'));*/
+    let texture = Texture.fromImage(gl,
       require('../asset/texture_diffuse.jpg'));
     let normalTex = Texture.fromImage(gl,
       require('../asset/texture_normal.jpg'));
     let depthTex = Texture.fromImage(gl,
-      require('../asset/texture_depth.jpg'));*/
+      require('../asset/texture_depth.jpg'));
     let material2 = new PhongMaterial(gl, {
       diffuseMap: texture,
       normalMap: normalTex,
@@ -151,11 +151,17 @@ export default class RenderView3D {
       shininess: 30
     });
     this.material2 = material2;
+
+    let woodTex = Texture.fromImage(gl, require('../asset/woodfloor_c.jpg'));
+    let woodNormalTex = Texture.fromImage(gl,
+      require('../asset/woodfloor_n.jpg'));
+    let woodSpecTex = Texture.fromImage(gl,
+      require('../asset/woodfloor_s.jpg'));
     let material3 = new PhongMaterial(gl, {
-      ambient: new Float32Array([0.1745 / 0.2, 0.01175 / 0.2, 0.01175 / 0.2]),
-      diffuse: new Float32Array([0.61424, 0.04136, 0.04136]),
-      specular: new Float32Array([0.727811, 0.626959, 0.626959]),
-      shininess: 76.8
+      diffuseMap: woodTex,
+      normalMap: woodNormalTex,
+      specularMap: woodSpecTex,
+      shininess: 30
     });
     let mesh = new Mesh(geometry, material);
     container.appendChild(mesh);
@@ -175,7 +181,7 @@ export default class RenderView3D {
     mat4.translate(quad.matrix, quad.matrix, [0, -10, 0]);
     mat4.scale(quad.matrix, quad.matrix, [60, 60, 60]);
     mat4.rotateX(quad.matrix, quad.matrix, -90 * Math.PI / 180);
-    // container.appendChild(quad);
+    container.appendChild(quad);
     this.container = container;
   }
   // OpenGL render point
@@ -232,7 +238,7 @@ export default class RenderView3D {
     // Calculate camera vectors
     let projectionMat = mat4.create();
     mat4.perspective(projectionMat,
-      45 * Math.PI / 180, this.canvas.width / this.canvas.height, 0.1, 100.0);
+      45 * Math.PI / 180, this.canvas.width / this.canvas.height, 0.1, 1000.0);
     let cameraLook = vec3.create();
     vec3.add(cameraLook, this.camera.pos, this.camera.front);
     let viewMat = mat4.create();
@@ -249,7 +255,7 @@ export default class RenderView3D {
         ambient: new Float32Array([0.2, 0.2, 0.2]),
         diffuse: new Float32Array([1, 1, 1]),
         specular: new Float32Array([1, 1, 1]),
-        attenuation: 0.0014
+        attenuation: 0.000014
         // coneDirection: new Float32Array([1, 1, 1]),
         /*coneDirection: this.camera.front,
         coneCutOff: new Float32Array([
