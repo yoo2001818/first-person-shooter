@@ -14,11 +14,17 @@ export default class Container extends Object3D {
   removeChild(child) {
     this.children.splice(this.getChildIndex(child), 1);
   }
-  render(gl, transform, context) {
-    let matrix = this.getGlobalMatrix(transform);
+  update(context, parent) {
+    super.update(context, parent);
     for (let i = 0; i < this.children.length; ++i) {
       let child = this.children[i];
-      child.render(gl, matrix, context);
+      child.update(context, this);
+    }
+  }
+  render(context) {
+    for (let i = 0; i < this.children.length; ++i) {
+      let child = this.children[i];
+      child.render(context);
     }
   }
 }

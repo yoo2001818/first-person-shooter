@@ -43,18 +43,18 @@ export default class PhongMaterial extends Material {
     gl.uniform3fv(this.shader.viewPos, context.viewPos);
 
     gl.uniform1i(this.shader.lightSize, 1);
+    // TODO support multiple lights.
+    gl.uniform4fv(this.shader.light.position, context.lights[0].position);
+    gl.uniform3fv(this.shader.light.ambient, context.lights[0].ambient);
+    gl.uniform3fv(this.shader.light.diffuse, context.lights[0].diffuse);
+    gl.uniform3fv(this.shader.light.specular, context.lights[0].specular);
 
-    gl.uniform4fv(this.shader.light.position, context.light.position);
-    gl.uniform3fv(this.shader.light.ambient, context.light.ambient);
-    gl.uniform3fv(this.shader.light.diffuse, context.light.diffuse);
-    gl.uniform3fv(this.shader.light.specular, context.light.specular);
+    gl.uniform1f(this.shader.light.attenuation, context.lights[0].attenuation);
 
-    gl.uniform1f(this.shader.light.attenuation, context.light.attenuation);
-
-    if (context.light.coneCutOff != null) {
+    if (context.lights[0].coneCutOff != null) {
       gl.uniform3fv(this.shader.light.coneDirection,
-        context.light.coneDirection);
-      gl.uniform2fv(this.shader.light.coneCutOff, context.light.coneCutOff);
+        context.lights[0].coneDirection);
+      gl.uniform2fv(this.shader.light.coneCutOff, context.lights[0].coneCutOff);
     } else {
       gl.uniform2f(this.shader.light.coneCutOff, 0, 0);
     }

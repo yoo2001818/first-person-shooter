@@ -245,10 +245,15 @@ export default class RenderView3D {
     mat4.lookAt(viewMat, this.camera.pos, cameraLook, this.camera.up);
     let vpMat = mat4.create();
     mat4.multiply(vpMat, projectionMat, viewMat);
-    // We can do OpenGL stuff now.. but now what?
+    // Do OpenGL stuff from now on
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    this.container.render(gl, vpMat, {
-      light: {
+    // Update context information - This has no use other than updating
+    // the global view matrix, so I'm passing dummy object (which is quite
+    // bad).
+    // TODO duct taping code until the Light class is completed...
+    this.container.update({});
+    this.container.render({
+      lights: [{
         position: lightVec4,
         // position: new Float32Array([
         //  this.camera.pos[0], this.camera.pos[1], this.camera.pos[2], 1.0]),
@@ -262,8 +267,10 @@ export default class RenderView3D {
           Math.cos(12.5 / 180 * Math.PI),
           Math.cos(17.5 / 180 * Math.PI)
         ])*/
-      },
-      viewPos: this.camera.pos
+      }],
+      viewPos: this.camera.pos,
+      vpMatrix: vpMat,
+      gl: gl
     });
   }
 }

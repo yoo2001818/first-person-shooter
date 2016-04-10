@@ -1,5 +1,5 @@
 import Object3D from './object3D';
-import { mat3 } from 'gl-matrix';
+import { mat3, mat4 } from 'gl-matrix';
 
 export default class Mesh extends Object3D {
   constructor(geometry, material) {
@@ -7,15 +7,20 @@ export default class Mesh extends Object3D {
     this.geometry = geometry;
     this.material = material;
   }
-  render(gl, transform, context) {
+  // Currently do nothing at update, but we may need it for instancing, etc...
+  render(context) {
+    const { gl } = context;
     this.material.use(this.geometry, context);
+    // TODO maybe multiplying in the shader is faster? Or not.
+    let mvpMatrix = mat4.create();
+    mat4.multiply(mvpMatrix, context.vpMatrix, this.globalMatrix);
     gl.uniformMatrix4fv(this.material.shader.transform, false,
-      this.getGlobalMatrix(transform));
+      mvpMatrix);
     gl.uniformMatrix4fv(this.material.shader.model, false,
-      this.matrix);
+      this.globalMatrix);
     if (this.material.shader.modelInvTransp !== -1) {
       let invMat = mat3.create();
-      mat3.normalFromMat4(invMat, this.matrix);
+      mat3.normalFromMat4(invMat, this.globalMatrix);
       gl.uniformMatrix3fv(this.material.shader.modelInvTransp, false,
         invMat);
     }
