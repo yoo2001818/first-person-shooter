@@ -14,15 +14,19 @@ export default class PhongMaterial extends Material {
       PHONG_SHADER.useNormalMap = PHONG_SHADER.getUniform('uUseNormalMap');
       PHONG_SHADER.depthMapScale = PHONG_SHADER.getUniform('uDepthMapScale');
       PHONG_SHADER.lightSize = PHONG_SHADER.getUniform('uLightSize');
-      PHONG_SHADER.light = {
-        position: PHONG_SHADER.getUniform('uLight[0].position'),
-        ambient: PHONG_SHADER.getUniform('uLight[0].ambient'),
-        diffuse: PHONG_SHADER.getUniform('uLight[0].diffuse'),
-        specular: PHONG_SHADER.getUniform('uLight[0].specular'),
-        attenuation: PHONG_SHADER.getUniform('uLight[0].attenuation'),
-        coneDirection: PHONG_SHADER.getUniform('uLight[0].coneDirection'),
-        coneCutOff: PHONG_SHADER.getUniform('uLight[0].coneCutOff')
-      };
+      PHONG_SHADER.lights = [];
+      for (let i = 0; i < 8; ++i) {
+        let lightName = 'uLight[' + i + '].';
+        PHONG_SHADER.lights.push({
+          position: PHONG_SHADER.getUniform(lightName + 'position'),
+          ambient: PHONG_SHADER.getUniform(lightName + 'ambient'),
+          diffuse: PHONG_SHADER.getUniform(lightName + 'diffuse'),
+          specular: PHONG_SHADER.getUniform(lightName + 'specular'),
+          attenuation: PHONG_SHADER.getUniform(lightName + 'attenuation'),
+          coneDirection: PHONG_SHADER.getUniform(lightName + 'coneDirection'),
+          coneCutOff: PHONG_SHADER.getUniform(lightName + 'coneCutOff')
+        });
+      }
       PHONG_SHADER.material = {
         ambient: PHONG_SHADER.getUniform('uMaterial.ambient'),
         diffuse: PHONG_SHADER.getUniform('uMaterial.diffuse'),
@@ -42,22 +46,26 @@ export default class PhongMaterial extends Material {
     const gl = this.gl;
     gl.uniform3fv(this.shader.viewPos, context.viewPos);
 
-    gl.uniform1i(this.shader.lightSize, 1);
-    // TODO support multiple lights.
-    gl.uniform4fv(this.shader.light.position, context.lights[0].position);
-    gl.uniform3fv(this.shader.light.ambient, context.lights[0].ambient);
-    gl.uniform3fv(this.shader.light.diffuse, context.lights[0].diffuse);
-    gl.uniform3fv(this.shader.light.specular, context.lights[0].specular);
+    gl.uniform1i(this.shader.lightSize, context.lights.length);
+    context.lights.forEach((light, id) => {
+      if (id >= 8) {
+        throw new Error('Maximum lights limit is 8');
+      }
+      gl.uniform4fv(this.shader.lights[id].position, light.position);
+      gl.uniform3fv(this.shader.lights[id].ambient, light.ambient);
+      gl.uniform3fv(this.shader.lights[id].diffuse, light.diffuse);
+      gl.uniform3fv(this.shader.lights[id].specular, light.specular);
 
-    gl.uniform1f(this.shader.light.attenuation, context.lights[0].attenuation);
+      gl.uniform1f(this.shader.lights[id].attenuation, light.attenuation);
 
-    if (context.lights[0].coneCutOff != null) {
-      gl.uniform3fv(this.shader.light.coneDirection,
-        context.lights[0].coneDirection);
-      gl.uniform2fv(this.shader.light.coneCutOff, context.lights[0].coneCutOff);
-    } else {
-      gl.uniform2f(this.shader.light.coneCutOff, 0, 0);
-    }
+      if (light.coneCutOff != null) {
+        gl.uniform3fv(this.shader.lights[id].coneDirection,
+          light.coneDirection);
+        gl.uniform2fv(this.shader.lights[id].coneCutOff, light.coneCutOff);
+      } else {
+        gl.uniform2f(this.shader.lights[id].coneCutOff, 0, 0);
+      }
+    });
     // Use texture if available
     if (this.options.diffuseMap != null) {
       // Use texture #0

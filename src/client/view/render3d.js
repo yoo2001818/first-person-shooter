@@ -1,4 +1,4 @@
-import { mat4, vec3 } from 'gl-matrix';
+import { mat4, vec3, vec4 } from 'gl-matrix';
 import Container from '../3d/container';
 import Mesh from '../3d/mesh';
 import BoxGeometry from '../3d/boxGeometry';
@@ -7,6 +7,8 @@ import PhongMaterial from '../3d/phongMaterial';
 import Material from '../3d/material';
 import Shader from '../3d/shader';
 import Texture from '../3d/texture';
+import Light from '../3d/light';
+import Context from '../3d/context';
 
 export default class RenderView3D {
   constructor(store, canvas) {
@@ -116,17 +118,42 @@ export default class RenderView3D {
     };
     lightMaterial.color = new Float32Array([1, 1, 1]);
 
-    let light = new Mesh(geometry, lightMaterial);
+    let light = new Light({
+      ambient: new Float32Array([0.2, 0.2, 0.2]),
+      diffuse: new Float32Array([1, 1, 1]),
+      specular: new Float32Array([1, 1, 1]),
+      attenuation: 0.014
+      // coneDirection: new Float32Array([1, 1, 1]),
+      /*coneDirection: this.camera.front,
+      coneCutOff: new Float32Array([
+        Math.cos(12.5 / 180 * Math.PI),
+        Math.cos(17.5 / 180 * Math.PI)
+      ])*/
+    });
     container.appendChild(light);
+    vec4.set(light.position, 3, -3, 0, 1);
     mat4.translate(light.matrix, light.matrix, [3, -3, 0]);
     mat4.scale(light.matrix, light.matrix, [0.2, 0.2, 0.2]);
     this.light = light;
+
+    let flashLight = new Light({
+      ambient: new Float32Array([0.2, 0.2, 0.2]),
+      diffuse: new Float32Array([1, 1, 1]),
+      specular: new Float32Array([0.75, 0.75, 0.75]),
+      attenuation: 0.0005,
+      coneCutOff: new Float32Array([
+        Math.cos(12.5 / 180 * Math.PI),
+        Math.cos(17.5 / 180 * Math.PI)
+      ])
+    });
+    container.appendChild(flashLight);
+    this.flashLight = flashLight;
 
     let material = new PhongMaterial(gl, {
       ambient: new Float32Array([0.05 / 0.2, 0.05 / 0.2, 0]),
       diffuse: new Float32Array([0.5, 0.5, 0.4]),
       specular: new Float32Array([0.7, 0.7, 0.04]),
-      shininess: 1
+      shininess: 70
     });
     /*let texture = Texture.fromImage(gl, require('../asset/texture2.png'));
     let normalTex = Texture.fromImage(gl,
@@ -143,12 +170,12 @@ export default class RenderView3D {
       diffuseMap: texture,
       normalMap: normalTex,
       depthMap: depthTex,
-      depthMapScale: new Float32Array([0.1, 1.5]),
+      depthMapScale: new Float32Array([0.1, 1]),
       // specularMap: texture2,
       // ambient: new Float32Array([0.24725 / 0.2, 0.1995 / 0.2, 0.0745 / 0.2]),
       // diffuse: new Float32Array([0.75164, 0.60648, 0.22648]),
       specular: new Float32Array([0.5, 0.5, 0.55]),
-      shininess: 30
+      shininess: 128
     });
     this.material2 = material2;
 
@@ -228,13 +255,19 @@ export default class RenderView3D {
     /*let lightVec3 = new Float32Array([
       Math.cos(Date.now() / 700) * 10, 0, Math.sin(Date.now() / 700) * 10
     ]);*/
-    let lightVec4 = new Float32Array([
-      3, -3, 0, 1
-      // 0, 1, 0, 0
+    this.light.position = new Float32Array([
+      Math.cos(Date.now() / 700) * 10, 0, Math.sin(Date.now() / 700) * 10
     ]);
     mat4.identity(this.light.matrix);
-    mat4.translate(this.light.matrix, this.light.matrix, lightVec4);
+    mat4.translate(this.light.matrix, this.light.matrix, this.light.position);
     mat4.scale(this.light.matrix, this.light.matrix, [0.2, 0.2, 0.2]);
+
+    vec3.copy(this.flashLight.position, this.camera.pos);
+    vec3.copy(this.flashLight.rotation, this.camera.front);
+    mat4.identity(this.flashLight.matrix);
+    mat4.translate(this.flashLight.matrix, this.flashLight.matrix,
+      this.flashLight.position);
+    mat4.scale(this.flashLight.matrix, this.flashLight.matrix, [0.2, 0.2, 0.2]);
     // Calculate camera vectors
     let projectionMat = mat4.create();
     mat4.perspective(projectionMat,
@@ -247,30 +280,11 @@ export default class RenderView3D {
     mat4.multiply(vpMat, projectionMat, viewMat);
     // Do OpenGL stuff from now on
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    // Update context information - This has no use other than updating
-    // the global view matrix, so I'm passing dummy object (which is quite
-    // bad).
-    // TODO duct taping code until the Light class is completed...
-    this.container.update({});
-    this.container.render({
-      lights: [{
-        position: lightVec4,
-        // position: new Float32Array([
-        //  this.camera.pos[0], this.camera.pos[1], this.camera.pos[2], 1.0]),
-        ambient: new Float32Array([0.2, 0.2, 0.2]),
-        diffuse: new Float32Array([1, 1, 1]),
-        specular: new Float32Array([1, 1, 1]),
-        attenuation: 0.000014
-        // coneDirection: new Float32Array([1, 1, 1]),
-        /*coneDirection: this.camera.front,
-        coneCutOff: new Float32Array([
-          Math.cos(12.5 / 180 * Math.PI),
-          Math.cos(17.5 / 180 * Math.PI)
-        ])*/
-      }],
-      viewPos: this.camera.pos,
-      vpMatrix: vpMat,
-      gl: gl
-    });
+    // Update context information
+    let context = new Context(gl);
+    context.viewPos = this.camera.pos;
+    context.vpMatrix = vpMat;
+    this.container.update(context);
+    this.container.render(context);
   }
 }
