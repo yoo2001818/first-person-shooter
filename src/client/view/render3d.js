@@ -1,13 +1,17 @@
 import { mat4, vec3, vec4 } from 'gl-matrix';
 import Container from '../3d/container';
 import Mesh from '../3d/mesh';
+import SkyboxMesh from '../3d/skyboxMesh';
 import BoxGeometry from '../3d/boxGeometry';
+import SkyboxGeometry from '../3d/skyboxGeometry';
 import CombinedGeometry from '../3d/combinedGeometry';
 import QuadGeometry from '../3d/quadGeometry';
 import PhongMaterial from '../3d/phongMaterial';
+import SkyboxMaterial from '../3d/skyboxMaterial';
 import Material from '../3d/material';
 import Shader from '../3d/shader';
 import Texture from '../3d/texture';
+import CubeTexture from '../3d/cubeTexture';
 import Light from '../3d/light';
 import Context from '../3d/context';
 
@@ -124,8 +128,8 @@ export default class RenderView3D {
 
     let light = new Light({
       ambient: new Float32Array([0.2, 0.2, 0.2]),
-      diffuse: new Float32Array([0.4, 0.4, 0.4]),
-      specular: new Float32Array([0.6, 0.6, 0.6]),
+      diffuse: new Float32Array([0.8, 0.8, 0.8]),
+      specular: new Float32Array([0.8, 0.8, 0.8]),
       attenuation: 0.014
       // coneDirection: new Float32Array([1, 1, 1]),
       /*coneDirection: this.camera.front,
@@ -136,7 +140,7 @@ export default class RenderView3D {
     });
     container.appendChild(light);
     light.position = vec4.create();
-    vec4.set(light.position, 0, 1, 0, 0);
+    vec4.set(light.position, -1, 1, 0, 0);
     mat4.translate(light.matrix, light.matrix, [3, -3, 0]);
     mat4.scale(light.matrix, light.matrix, [0.2, 0.2, 0.2]);
     this.light = light;
@@ -229,6 +233,22 @@ export default class RenderView3D {
     mat4.scale(quad.matrix, quad.matrix, [40, 40, 40]);
     mat4.rotateX(quad.matrix, quad.matrix, -90 * Math.PI / 180);
     container.appendChild(quad);
+
+    // Lastly, add skybox
+    let skyboxTexture = CubeTexture.fromImage(gl, [
+      require('../asset/clouds1_east.jpg'),
+      require('../asset/clouds1_west.jpg'),
+      require('../asset/clouds1_up.jpg'),
+      require('../asset/clouds1_down.jpg'),
+      require('../asset/clouds1_north.jpg'),
+      require('../asset/clouds1_south.jpg')
+    ]);
+    let skyboxMaterial = new SkyboxMaterial(gl, skyboxTexture);
+    let skyboxGeom = new SkyboxGeometry(gl);
+    skyboxGeom.load();
+    let skybox = new SkyboxMesh(skyboxGeom, skyboxMaterial);
+    container.appendChild(skybox);
+
     this.container = container;
   }
   // OpenGL render point
@@ -326,7 +346,7 @@ export default class RenderView3D {
     // Calculate camera vectors
     let projectionMat = mat4.create();
     mat4.perspective(projectionMat,
-      45 * Math.PI / 180, this.canvas.width / this.canvas.height, 0.1, 1000.0);
+      90 * Math.PI / 180, this.canvas.width / this.canvas.height, 0.1, 1000.0);
     let cameraLook = vec3.create();
     vec3.add(cameraLook, this.camera.pos, this.camera.front);
     let viewMat = mat4.create();
@@ -339,6 +359,8 @@ export default class RenderView3D {
     let context = new Context(gl);
     context.viewPos = this.camera.pos;
     context.vpMatrix = vpMat;
+    context.pMatrix = projectionMat;
+    context.vMatrix = viewMat;
     this.container.update(context);
     this.container.render(context);
   }
