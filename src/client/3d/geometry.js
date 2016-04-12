@@ -6,6 +6,7 @@ export default class Geometry {
     this.vertices = null;
     this.normals = null;
     this.texCoords = null;
+    this.tangents = null;
     this.indices = null;
     this.indicesType = null;
 
@@ -27,7 +28,8 @@ export default class Geometry {
     if (this.isLoaded()) throw new Error('Geometry is already loaded');
     if (this.vertices === null) throw new Error('Vertices array is null');
     if (this.normals === null) throw new Error('Normals array is null');
-    if (this.texCoords === null) throw new Error('Texure coords array is null');
+    if (this.texCoords === null) throw new Error('Texture coord array is null');
+    if (this.tangents === null) throw new Error('Tangents array is null');
     if (this.vertices.length !== this.normals.length) {
       throw new Error('Vertices and normals array size does not match');
     }

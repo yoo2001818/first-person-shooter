@@ -2,6 +2,7 @@ import { mat4, vec3, vec4 } from 'gl-matrix';
 import Container from '../3d/container';
 import Mesh from '../3d/mesh';
 import BoxGeometry from '../3d/boxGeometry';
+import CombinedGeometry from '../3d/combinedGeometry';
 import QuadGeometry from '../3d/quadGeometry';
 import PhongMaterial from '../3d/phongMaterial';
 import Material from '../3d/material';
@@ -153,12 +154,12 @@ export default class RenderView3D {
     container.appendChild(flashLight);
     this.flashLight = flashLight;
 
-    let material = new PhongMaterial(gl, {
+    /*let material = new PhongMaterial(gl, {
       ambient: new Float32Array([0.05 / 0.2, 0.05 / 0.2, 0]),
       diffuse: new Float32Array([0.5, 0.5, 0.4]),
       specular: new Float32Array([0.7, 0.7, 0.04]),
       shininess: 70
-    });
+    });*/
     /*let texture = Texture.fromImage(gl, require('../asset/texture2.png'));
     let normalTex = Texture.fromImage(gl,
       require('../asset/texture2_normal.png'));
@@ -194,12 +195,13 @@ export default class RenderView3D {
       specularMap: woodSpecTex,
       shininess: 30
     });
-    let mesh = new Mesh(geometry, material);
-    container.appendChild(mesh);
-    let prevPos = [0, -7.5, 0];
+    // let mesh = new Mesh(geometry, material);
+    // container.appendChild(mesh);
+    let combinedGeom = new CombinedGeometry(gl);
+    let prevPos = [0, -9, 0];
     let angle = Math.random() * 360 - 180;
     for (let i = 0; i < 40; ++i) {
-      let mesh2 = new Mesh(geometry, material2);
+      // let mesh2 = new Mesh(geometry, material2);
       // No, I won't do 3D OBB
       /*mat4.rotateX(mesh2.matrix, mesh2.matrix, Math.random() * Math.PI * 4);
       mat4.rotateY(mesh2.matrix, mesh2.matrix, Math.random() * Math.PI * 4);
@@ -211,10 +213,17 @@ export default class RenderView3D {
       ];
       prevPos = pos;
       angle += Math.random() * 60 - 30;
-      mat4.translate(mesh2.matrix, mesh2.matrix, pos);
+      let mat = mat4.create();
+      mat4.translate(mat, mat, pos);
+      // mat4.translate(mesh2.matrix, mesh2.matrix, pos);
       this.objects.push(pos);
-      container.appendChild(mesh2);
+      // container.appendChild(mesh2);
+      combinedGeom.combine(geometry, mat);
     }
+    combinedGeom.load();
+    let gameMap = new Mesh(combinedGeom, material2);
+    container.appendChild(gameMap);
+
     let quad = new Mesh(quadGeom, material3);
     mat4.translate(quad.matrix, quad.matrix, [0, -7.5, 0]);
     mat4.scale(quad.matrix, quad.matrix, [40, 40, 40]);
