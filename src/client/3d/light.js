@@ -13,7 +13,7 @@ export default class Light extends Object3D {
     position[0] = this.position[0];
     position[1] = this.position[1];
     position[2] = this.position[2];
-    position[3] = 1;
+    position[3] = this.position[3] == null ? 1 : this.position[3];
     context.lights.push(Object.assign({}, this.options, {
       position, coneDirection: this.rotation
     }));

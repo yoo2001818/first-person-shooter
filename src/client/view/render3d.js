@@ -30,6 +30,9 @@ export default class RenderView3D {
     this.mouseY = 0;
     this.pitch = 0;
     this.yaw = -Math.PI/2;
+    this.cameraVelY = 0;
+    this.cameraGround = 1;
+    this.objects = [];
   }
   clearEvents() {
 
@@ -88,7 +91,7 @@ export default class RenderView3D {
     // Clear the color as well as the depth buffer.
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     this.initWorld();
-    this.render();
+    this.render(0);
   }
   initWorld() {
     const gl = this.gl;
@@ -120,8 +123,8 @@ export default class RenderView3D {
 
     let light = new Light({
       ambient: new Float32Array([0.2, 0.2, 0.2]),
-      diffuse: new Float32Array([1, 1, 1]),
-      specular: new Float32Array([1, 1, 1]),
+      diffuse: new Float32Array([0.4, 0.4, 0.4]),
+      specular: new Float32Array([0.6, 0.6, 0.6]),
       attenuation: 0.014
       // coneDirection: new Float32Array([1, 1, 1]),
       /*coneDirection: this.camera.front,
@@ -131,7 +134,8 @@ export default class RenderView3D {
       ])*/
     });
     container.appendChild(light);
-    vec4.set(light.position, 3, -3, 0, 1);
+    light.position = vec4.create();
+    vec4.set(light.position, 0, 1, 0, 0);
     mat4.translate(light.matrix, light.matrix, [3, -3, 0]);
     mat4.scale(light.matrix, light.matrix, [0.2, 0.2, 0.2]);
     this.light = light;
@@ -192,21 +196,28 @@ export default class RenderView3D {
     });
     let mesh = new Mesh(geometry, material);
     container.appendChild(mesh);
-    for (let i = 0; i < 10; ++i) {
+    let prevPos = [0, -7.5, 0];
+    let angle = Math.random() * 360 - 180;
+    for (let i = 0; i < 40; ++i) {
       let mesh2 = new Mesh(geometry, material2);
-      mat4.rotateX(mesh2.matrix, mesh2.matrix, Math.random() * Math.PI * 4);
+      // No, I won't do 3D OBB
+      /*mat4.rotateX(mesh2.matrix, mesh2.matrix, Math.random() * Math.PI * 4);
       mat4.rotateY(mesh2.matrix, mesh2.matrix, Math.random() * Math.PI * 4);
-      mat4.rotateZ(mesh2.matrix, mesh2.matrix, Math.random() * Math.PI * 4);
-      mat4.translate(mesh2.matrix, mesh2.matrix, [
-        Math.random() * 20 - 10,
-        Math.random() * 20 - 10,
-        Math.random() * 20 - 10
-      ]);
+      mat4.rotateZ(mesh2.matrix, mesh2.matrix, Math.random() * Math.PI * 4);*/
+      let pos = [
+        prevPos[0] + Math.cos(angle / 180 * Math.PI) * (Math.random() * 4 + 2),
+        prevPos[1] + Math.random() * 1 + 1.5,
+        prevPos[2] + Math.sin(angle / 180 * Math.PI) * (Math.random() * 4 + 2)
+      ];
+      prevPos = pos;
+      angle += Math.random() * 60 - 30;
+      mat4.translate(mesh2.matrix, mesh2.matrix, pos);
+      this.objects.push(pos);
       container.appendChild(mesh2);
     }
     let quad = new Mesh(quadGeom, material3);
-    mat4.translate(quad.matrix, quad.matrix, [0, -10, 0]);
-    mat4.scale(quad.matrix, quad.matrix, [60, 60, 60]);
+    mat4.translate(quad.matrix, quad.matrix, [0, -7.5, 0]);
+    mat4.scale(quad.matrix, quad.matrix, [40, 40, 40]);
     mat4.rotateX(quad.matrix, quad.matrix, -90 * Math.PI / 180);
     container.appendChild(quad);
     this.container = container;
@@ -217,15 +228,22 @@ export default class RenderView3D {
     if (!gl) return;
     // 37: left, 38: up, 39: right, 40: down
     // This should not  exist in here, but what the heck
-    const cameraSpeed = 0.02 * delta;
+    const cameraSpeed = 0.01 * delta;
+    let moveFront = vec3.create();
+    vec3.normalize(moveFront, [
+      Math.cos(this.yaw),
+      0,
+      Math.sin(this.yaw)
+    ]);
     if (this.keys[38] || this.keys[87]) {
       vec3.add(this.camera.pos, this.camera.pos,
-        vec3.scale(vec3.create(), this.camera.front, cameraSpeed));
+        vec3.scale(vec3.create(), moveFront, cameraSpeed));
     }
     if (this.keys[40] || this.keys[83]) {
       vec3.add(this.camera.pos, this.camera.pos,
-        vec3.scale(vec3.create(), this.camera.front, -cameraSpeed));
+        vec3.scale(vec3.create(), moveFront, -cameraSpeed));
     }
+    /*
     if (this.keys[69]) {
       vec3.add(this.camera.pos, this.camera.pos,
         vec3.scale(vec3.create(), this.camera.up, cameraSpeed));
@@ -234,8 +252,9 @@ export default class RenderView3D {
       vec3.add(this.camera.pos, this.camera.pos,
         vec3.scale(vec3.create(), this.camera.up, -cameraSpeed));
     }
+    */
     let cameraCross = vec3.cross(vec3.create(),
-      this.camera.front, this.camera.up);
+      moveFront, this.camera.up);
     vec3.normalize(cameraCross, cameraCross);
     if (this.keys[37] || this.keys[65]) {
       vec3.add(this.camera.pos, this.camera.pos,
@@ -245,22 +264,49 @@ export default class RenderView3D {
       vec3.add(this.camera.pos, this.camera.pos,
         vec3.scale(vec3.create(), cameraCross, cameraSpeed));
     }
+    if (this.keys[32] && Math.abs(this.cameraVelY) < 0.030 &&
+      this.cameraGround
+    ) {
+      this.cameraVelY = 0.25;
+      this.cameraGround = 0;
+    }
     // Camera moving routine
     vec3.normalize(this.camera.front, [
       Math.cos(this.pitch) * Math.cos(this.yaw),
       Math.sin(this.pitch),
       Math.cos(this.pitch) * Math.sin(this.yaw)
     ]);
+    this.cameraVelY -= 0.0005 * delta;
+    vec3.add(this.camera.pos, this.camera.pos, [0, this.cameraVelY, 0]);
+    if (this.camera.pos[1] < -6) {
+      this.camera.pos[1] = -6;
+      this.cameraVelY = 0;
+      this.cameraGround = 1;
+    }
+    for (let i = 0; i < this.objects.length; ++i) {
+      let object = this.objects[i];
+      if (this.camera.pos[1] - 1.5 > object[1] - 1 &&
+        this.camera.pos[1] - 1.5 < object[1] + 1 &&
+        this.camera.pos[0] > object[0] - 1 &&
+        this.camera.pos[0] < object[0] + 1 &&
+        this.camera.pos[2] > object[2] - 1 &&
+        this.camera.pos[2] < object[2] + 1
+      ) {
+        this.camera.pos[1] = object[1] + 1 + 1.5;
+        this.cameraVelY = 0;
+        this.cameraGround = 1;
+      }
+    }
     // Rotate light around
     /*let lightVec3 = new Float32Array([
       Math.cos(Date.now() / 700) * 10, 0, Math.sin(Date.now() / 700) * 10
     ]);*/
-    this.light.position = new Float32Array([
+    /*this.light.position = new Float32Array([
       Math.cos(Date.now() / 700) * 10, 0, Math.sin(Date.now() / 700) * 10
     ]);
     mat4.identity(this.light.matrix);
     mat4.translate(this.light.matrix, this.light.matrix, this.light.position);
-    mat4.scale(this.light.matrix, this.light.matrix, [0.2, 0.2, 0.2]);
+    mat4.scale(this.light.matrix, this.light.matrix, [0.2, 0.2, 0.2]);*/
 
     vec3.copy(this.flashLight.position, this.camera.pos);
     vec3.copy(this.flashLight.rotation, this.camera.front);
