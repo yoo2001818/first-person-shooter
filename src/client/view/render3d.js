@@ -64,16 +64,10 @@ export default class RenderView3D {
         this.pitch = Math.max(-Math.PI / 2 + 0.001, Math.min(Math.PI / 2
           - 0.001, this.pitch - e.movementY / 400));
         this.yaw = this.yaw + e.movementX / 400;
+        return;
       }
       let mouseX = e.layerX - this.canvas.width / 2;
       let mouseY = e.layerY - this.canvas.height / 2;
-      if (Math.abs(this.mouseX - mouseX) < 100 &&
-        Math.abs(this.mouseY - mouseY) < 100
-      ) {
-        this.pitch = Math.max(-Math.PI / 2 + 0.001, Math.min(Math.PI / 2
-          - 0.001, this.pitch - (mouseY - this.mouseY) / 400));
-        this.yaw = this.yaw + (mouseX - this.mouseX) / 400;
-      }
       this.mouseX = mouseX;
       this.mouseY = mouseY;
     });
@@ -299,6 +293,18 @@ export default class RenderView3D {
   render(delta) {
     const gl = this.gl;
     if (!gl) return;
+    if (!document.pointerLockElement && !document.mozPointerLockElement) {
+      if (Math.abs(this.mouseY) > 10) {
+        this.pitch = Math.max(-Math.PI / 2 + 0.001, Math.min(Math.PI / 2
+          - 0.001, this.pitch - Math.sin(this.mouseY / 4000)));
+      }
+      if (Math.abs(this.mouseX) > 10) {
+        this.yaw = this.yaw + Math.sin(this.mouseX / 4000);
+      }
+      /*this.pitch = Math.max(-Math.PI / 2 + 0.001, Math.min(Math.PI / 2
+        - 0.001, -this.mouseY / 200));
+      this.yaw = this.mouseX / 200;*/
+    }
     // 37: left, 38: up, 39: right, 40: down
     // This should not  exist in here, but what the heck
     const cameraSpeed = 0.008 * delta;
@@ -353,7 +359,7 @@ export default class RenderView3D {
     if (this.keys[32] && Math.abs(this.cameraVelY) < 0.030 &&
       this.cameraGround
     ) {
-      this.cameraVelY = 0.25;
+      this.cameraVelY = 0.25 * 54 / 60;
       this.cameraGround = 0;
     }
     // Camera moving routine
