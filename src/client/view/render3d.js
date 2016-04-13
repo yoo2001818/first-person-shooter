@@ -363,7 +363,7 @@ export default class RenderView3D {
       Math.cos(this.pitch) * Math.sin(this.yaw)
     ]);
     this.cameraVelY -= 0.0005 * delta;
-    vec3.add(velocity, velocity, [0, this.cameraVelY, 0]);
+    vec3.add(velocity, velocity, [0, this.cameraVelY * delta / 12, 0]);
     vec3.add(this.camera.pos, this.camera.pos, velocity);
     if (Math.abs(this.camera.pos[0]) < 10 &&
       Math.abs(this.camera.pos[2]) < 10 &&

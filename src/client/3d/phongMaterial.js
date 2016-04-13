@@ -31,12 +31,12 @@ export default class PhongMaterial extends Material {
         ambient: PHONG_SHADER.getUniform('uMaterial.ambient'),
         diffuse: PHONG_SHADER.getUniform('uMaterial.diffuse'),
         specular: PHONG_SHADER.getUniform('uMaterial.specular'),
-        shininess: PHONG_SHADER.getUniform('uMaterial.shininess'),
-        diffuseMap: PHONG_SHADER.getUniform('uMaterial.diffuseMap'),
-        specularMap: PHONG_SHADER.getUniform('uMaterial.specularMap'),
-        normalMap: PHONG_SHADER.getUniform('uMaterial.normalMap'),
-        depthMap: PHONG_SHADER.getUniform('uMaterial.depthMap')
+        shininess: PHONG_SHADER.getUniform('uMaterial.shininess')
       };
+      PHONG_SHADER.diffuseMap = PHONG_SHADER.getUniform('uDiffuseMap');
+      PHONG_SHADER.specularMap = PHONG_SHADER.getUniform('uSpecularMap');
+      PHONG_SHADER.normalMap = PHONG_SHADER.getUniform('uNormalMap');
+      PHONG_SHADER.depthMap = PHONG_SHADER.getUniform('uDepthMap');
     }
     super(context, PHONG_SHADER);
     this.options = options;
@@ -69,7 +69,7 @@ export default class PhongMaterial extends Material {
     // Use texture if available
     if (this.options.diffuseMap != null) {
       // Use texture #0
-      gl.uniform1i(this.shader.material.diffuseMap, 0);
+      gl.uniform1i(this.shader.diffuseMap, 0);
       this.options.diffuseMap.use(0);
 
       gl.uniform3f(this.shader.material.ambient, -1, -1, -1);
@@ -80,7 +80,7 @@ export default class PhongMaterial extends Material {
     }
     if (this.options.specularMap != null) {
       // Use texture #1
-      gl.uniform1i(this.shader.material.specularMap, 1);
+      gl.uniform1i(this.shader.specularMap, 1);
       this.options.specularMap.use(1);
 
       gl.uniform3f(this.shader.material.specular, -1, -1, -1);
@@ -90,7 +90,7 @@ export default class PhongMaterial extends Material {
     gl.uniform1f(this.shader.material.shininess, this.options.shininess);
     if (this.options.normalMap != null) {
       // Use texture #2
-      gl.uniform1i(this.shader.material.normalMap, 2);
+      gl.uniform1i(this.shader.normalMap, 2);
       this.options.normalMap.use(2);
       gl.uniform1i(this.shader.useNormalMap, 1);
     } else {
@@ -98,7 +98,7 @@ export default class PhongMaterial extends Material {
     }
     if (this.options.depthMap != null) {
       // Use texture #3
-      gl.uniform1i(this.shader.material.depthMap, 3);
+      gl.uniform1i(this.shader.depthMap, 3);
       this.options.depthMap.use(3);
       gl.uniform2fv(this.shader.depthMapScale, this.options.depthMapScale);
     } else {

@@ -7,11 +7,6 @@ struct Material {
   lowp vec3 specular;
 
   lowp float shininess;
-
-  sampler2D diffuseMap;
-  sampler2D specularMap;
-  sampler2D normalMap;
-  sampler2D depthMap;
 };
 
 struct Light {
@@ -27,7 +22,12 @@ struct Light {
   lowp vec3 coneDirection;
 };
 
-const int LIGHT_SIZE = 8;
+const int LIGHT_SIZE = 2;
+
+uniform sampler2D uDiffuseMap;
+uniform sampler2D uSpecularMap;
+uniform sampler2D uNormalMap;
+uniform sampler2D uDepthMap;
 
 uniform Material uMaterial;
 uniform Light uLight[LIGHT_SIZE];
@@ -96,7 +96,7 @@ void main(void) {
   lowp vec3 normal = vec3(0.0, 0.0, 1.0);
   lowp vec2 texCoord = vTexCoord;
   if (uDepthMapScale.x != 0.0) {
-    texCoord = depthMap(uMaterial.depthMap, vTexCoord, viewDir);
+    texCoord = depthMap(uDepthMap, vTexCoord, viewDir);
     if (texCoord.x > 1.0 || texCoord.y > 1.0 ||
       texCoord.x < 0.0 || texCoord.y < 0.0
     ) {
@@ -104,7 +104,7 @@ void main(void) {
     }
   }
   if (uUseNormalMap) {
-    normal = texture2D(uMaterial.normalMap, texCoord).xyz;
+    normal = texture2D(uNormalMap, texCoord).xyz;
     // Again, OpenGL uses inverted Y axis, so we need to invert this as well.
     normal.y = 1.0 - normal.y;
     normal = normalize(normal * 2.0 - 1.0);
@@ -114,13 +114,13 @@ void main(void) {
   lowp vec3 ambient, diffuse, specular;
 
   if (uMaterial.ambient.x == -1.0) {
-    ambient = texture2D(uMaterial.diffuseMap, texCoord).xyz;
+    ambient = texture2D(uDiffuseMap, texCoord).xyz;
   } else {
     ambient = uMaterial.ambient;
   }
 
   if (uMaterial.diffuse.x == -1.0) {
-    lowp vec4 texture = texture2D(uMaterial.diffuseMap, texCoord);
+    lowp vec4 texture = texture2D(uDiffuseMap, texCoord);
     diffuse = texture.xyz;
     // alpha = texture.w;
   } else {
@@ -128,7 +128,7 @@ void main(void) {
   }
 
   if (uMaterial.specular.x == -1.0) {
-    specular = texture2D(uMaterial.specularMap, texCoord).xyz;
+    specular = texture2D(uSpecularMap, texCoord).xyz;
   } else {
     specular = uMaterial.specular;
   }

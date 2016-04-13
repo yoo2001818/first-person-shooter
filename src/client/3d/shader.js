@@ -22,6 +22,7 @@ export default class Shader {
     gl.shaderSource(shader, data);
     gl.compileShader(shader);
     if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+      alert(gl.getShaderInfoLog(shader));
       throw new Error('Shader compilation failed: ' +
         gl.getShaderInfoLog(shader));
     }
@@ -54,7 +55,9 @@ export default class Shader {
     gl.attachShader(program, this.fragmentShader);
     gl.linkProgram(program);
     if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-      throw new Error('Shader program linking failed');
+      alert(gl.getProgramInfoLog(program));
+      throw new Error('Shader program linking failed: ' +
+        gl.getProgramInfoLog(program));
     }
     // TODO: if we support multiple shaders, this should be moved to somewhere
     // else.
