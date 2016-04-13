@@ -38,6 +38,8 @@ export default class RenderView3D {
     this.cameraVelY = 0;
     this.cameraGround = 1;
     this.objects = [];
+    this.bobbing = 0;
+    this.bobbingMod = 0;
   }
   clearEvents() {
 
@@ -101,15 +103,17 @@ export default class RenderView3D {
   initWorld() {
     const gl = this.gl;
     this.camera = {
-      pos: vec3.fromValues(0, 0, 12),
+      pos: vec3.fromValues(0, 0, 5),
       front: vec3.fromValues(0, 0, -1),
       up: vec3.fromValues(0, 1, 0)
     };
 
     let container = new Container();
+    this.container = container;
 
     let geometry = new BoxGeometry(gl);
     geometry.load();
+    this.geometry = geometry;
     let quadGeom = new QuadGeometry(gl);
     quadGeom.load();
 
@@ -199,38 +203,24 @@ export default class RenderView3D {
       specularMap: woodSpecTex,
       shininess: 30
     });
+    this.material3 = material3;
+    this.materials = [material2, material3, new PhongMaterial(gl, {
+      ambient: new Float32Array([0.24275 / 0.2, 0.1995 / 0.2, 0.0745 / 0.2]),
+      diffuse: new Float32Array([0.75164, 0.60648, 0.22648]),
+      specular: new Float32Array([0.628281, 0.555802, 0.366065]),
+      shininess: 51.2
+    })];
     // let mesh = new Mesh(geometry, material);
     // container.appendChild(mesh);
-    let combinedGeom = new CombinedGeometry(gl);
-    let prevPos = [0, -9, 0];
-    let angle = Math.random() * 360 - 180;
-    for (let i = 0; i < 40; ++i) {
-      // let mesh2 = new Mesh(geometry, material2);
-      // No, I won't do 3D OBB
-      /*mat4.rotateX(mesh2.matrix, mesh2.matrix, Math.random() * Math.PI * 4);
-      mat4.rotateY(mesh2.matrix, mesh2.matrix, Math.random() * Math.PI * 4);
-      mat4.rotateZ(mesh2.matrix, mesh2.matrix, Math.random() * Math.PI * 4);*/
-      let pos = [
-        prevPos[0] + Math.cos(angle / 180 * Math.PI) * (Math.random() * 4 + 2),
-        prevPos[1] + Math.random() * 1 + 1.5,
-        prevPos[2] + Math.sin(angle / 180 * Math.PI) * (Math.random() * 4 + 2)
-      ];
-      prevPos = pos;
-      angle += Math.random() * 60 - 30;
-      let mat = mat4.create();
-      mat4.translate(mat, mat, pos);
-      // mat4.translate(mesh2.matrix, mesh2.matrix, pos);
-      this.objects.push(pos);
-      // container.appendChild(mesh2);
-      combinedGeom.combine(geometry, mat);
-    }
-    combinedGeom.load();
-    let gameMap = new Mesh(combinedGeom, material2);
-    container.appendChild(gameMap);
+    this.prevPos = [0, -9, 0];
+    this.angle = Math.random() * 360 - 180;
+    this.difficulty = 0;
+    this.iteration = 0;
+    this.generateMap();
 
     let quad = new Mesh(quadGeom, material3);
     mat4.translate(quad.matrix, quad.matrix, [0, -7.5, 0]);
-    mat4.scale(quad.matrix, quad.matrix, [40, 40, 40]);
+    mat4.scale(quad.matrix, quad.matrix, [10, 10, 10]);
     mat4.rotateX(quad.matrix, quad.matrix, -90 * Math.PI / 180);
     container.appendChild(quad);
 
@@ -249,7 +239,59 @@ export default class RenderView3D {
     let skybox = new SkyboxMesh(skyboxGeom, skyboxMaterial);
     container.appendChild(skybox);
 
-    this.container = container;
+  }
+  generateMap() {
+    const { gl } = this;
+    let combinedGeom = new CombinedGeometry(gl);
+    for (let i = 0; i < 20; ++i) {
+      // let mesh2 = new Mesh(geometry, material2);
+      // No, I won't do 3D OBB
+      /*mat4.rotateX(mesh2.matrix, mesh2.matrix, Math.random() * Math.PI * 4);
+      mat4.rotateY(mesh2.matrix, mesh2.matrix, Math.random() * Math.PI * 4);
+      mat4.rotateZ(mesh2.matrix, mesh2.matrix, Math.random() * Math.PI * 4);*/
+      let range = Math.min(5, 4 + this.difficulty / 3);
+      let minRange = Math.min(4, 2 + this.difficulty / 2);
+      let constantP = Math.min(1, this.difficulty / 7);
+      let pos = [
+        this.prevPos[0] + Math.cos(this.angle / 180 * Math.PI) *
+          (Math.random() * range * (1 - constantP) + minRange +
+          range * constantP),
+        this.prevPos[1] + Math.random() *
+          Math.min(1.5, 1 + this.difficulty / 2) + 1.5,
+        this.prevPos[2] + Math.sin(this.angle / 180 * Math.PI) *
+          (Math.random() * range * (1 - constantP) + minRange +
+          range * constantP)
+      ];
+      this.prevPos = pos;
+      this.angle += Math.random() * 60 - 30;
+      let mat = mat4.create();
+      mat4.translate(mat, mat, pos);
+      // mat4.translate(mesh2.matrix, mesh2.matrix, pos);
+      this.objects.push(pos);
+      // container.appendChild(mesh2);
+      combinedGeom.combine(this.geometry, mat);
+      this.difficulty += 1/40;
+    }
+    combinedGeom.load();
+    if (this.iteration > 20 && this.wtfMaterial == null) {
+      this.wtfMaterial = new PhongMaterial(gl, {
+        diffuseMap: Texture.fromImage(gl, require('../asset/texture2.png')),
+        normalMap:
+          Texture.fromImage(gl, require('../asset/texture2_normal.png')),
+        depthMap:
+          Texture.fromImage(gl, require('../asset/texture2_depth.png')),
+        depthMapScale: new Float32Array([0.1, 1.5]),
+        // specularMap: texture2,
+        specular: new Float32Array([0.5, 0.5, 0.55]),
+        shininess: 128
+      });
+    }
+    let gameMap = new Mesh(combinedGeom, this.iteration > 20 ? this.wtfMaterial
+      : this.materials[
+        this.iteration % this.materials.length
+      ]);
+    this.container.appendChild(gameMap);
+    this.iteration += 1;
   }
   // OpenGL render point
   render(delta) {
@@ -257,20 +299,25 @@ export default class RenderView3D {
     if (!gl) return;
     // 37: left, 38: up, 39: right, 40: down
     // This should not  exist in here, but what the heck
-    const cameraSpeed = 0.01 * delta;
+    const cameraSpeed = 0.008 * delta;
+    let walking = false;
+    let velocity = vec3.create();
     let moveFront = vec3.create();
     vec3.normalize(moveFront, [
       Math.cos(this.yaw),
       0,
       Math.sin(this.yaw)
     ]);
+    this.bobbingMod *= 0.8;
     if (this.keys[38] || this.keys[87]) {
-      vec3.add(this.camera.pos, this.camera.pos,
+      vec3.add(velocity, velocity,
         vec3.scale(vec3.create(), moveFront, cameraSpeed));
+      walking = true;
     }
     if (this.keys[40] || this.keys[83]) {
-      vec3.add(this.camera.pos, this.camera.pos,
+      vec3.add(velocity, velocity,
         vec3.scale(vec3.create(), moveFront, -cameraSpeed));
+      walking = true;
     }
     /*
     if (this.keys[69]) {
@@ -286,12 +333,20 @@ export default class RenderView3D {
       moveFront, this.camera.up);
     vec3.normalize(cameraCross, cameraCross);
     if (this.keys[37] || this.keys[65]) {
-      vec3.add(this.camera.pos, this.camera.pos,
+      vec3.add(velocity, velocity,
         vec3.scale(vec3.create(), cameraCross, -cameraSpeed));
+      walking = true;
     }
     if (this.keys[39] || this.keys[68]) {
-      vec3.add(this.camera.pos, this.camera.pos,
+      vec3.add(velocity, velocity,
         vec3.scale(vec3.create(), cameraCross, cameraSpeed));
+      walking = true;
+    }
+    if (walking) {
+      this.bobbing += 0.1;
+      this.bobbingMod = Math.pow(Math.abs(Math.sin(this.bobbing)), 4) * 0.2;
+    } else {
+      this.bobbing = 0;
     }
     if (this.keys[32] && Math.abs(this.cameraVelY) < 0.030 &&
       this.cameraGround
@@ -306,11 +361,21 @@ export default class RenderView3D {
       Math.cos(this.pitch) * Math.sin(this.yaw)
     ]);
     this.cameraVelY -= 0.0005 * delta;
-    vec3.add(this.camera.pos, this.camera.pos, [0, this.cameraVelY, 0]);
-    if (this.camera.pos[1] < -6) {
+    vec3.add(velocity, velocity, [0, this.cameraVelY, 0]);
+    vec3.add(this.camera.pos, this.camera.pos, velocity);
+    if (Math.abs(this.camera.pos[0]) < 10 &&
+      Math.abs(this.camera.pos[2]) < 10 &&
+      this.camera.pos[1] < -6
+    ) {
       this.camera.pos[1] = -6;
       this.cameraVelY = 0;
       this.cameraGround = 1;
+    }
+    if (this.camera.pos[1] < -100) {
+      // Game over
+      this.camera.pos[0] = 5;
+      this.camera.pos[1] = -6;
+      this.camera.pos[2] = 0;
     }
     for (let i = 0; i < this.objects.length; ++i) {
       let object = this.objects[i];
@@ -326,6 +391,15 @@ export default class RenderView3D {
         this.cameraGround = 1;
       }
     }
+    if (this.objects.length < 20 ||
+      this.objects[this.objects.length-20][1] < this.camera.pos[1]
+    ) {
+      this.generateMap();
+    }
+    // Add bobbing
+    let cameraPos = vec3.create();
+    vec3.copy(cameraPos, this.camera.pos);
+    cameraPos[1] += this.bobbingMod;
     // Rotate light around
     /*let lightVec3 = new Float32Array([
       Math.cos(Date.now() / 700) * 10, 0, Math.sin(Date.now() / 700) * 10
@@ -337,7 +411,7 @@ export default class RenderView3D {
     mat4.translate(this.light.matrix, this.light.matrix, this.light.position);
     mat4.scale(this.light.matrix, this.light.matrix, [0.2, 0.2, 0.2]);*/
 
-    vec3.copy(this.flashLight.position, this.camera.pos);
+    vec3.copy(this.flashLight.position, cameraPos);
     vec3.copy(this.flashLight.rotation, this.camera.front);
     mat4.identity(this.flashLight.matrix);
     mat4.translate(this.flashLight.matrix, this.flashLight.matrix,
@@ -346,11 +420,11 @@ export default class RenderView3D {
     // Calculate camera vectors
     let projectionMat = mat4.create();
     mat4.perspective(projectionMat,
-      90 * Math.PI / 180, this.canvas.width / this.canvas.height, 0.1, 1000.0);
+      70 * Math.PI / 180, this.canvas.width / this.canvas.height, 0.1, 1000.0);
     let cameraLook = vec3.create();
-    vec3.add(cameraLook, this.camera.pos, this.camera.front);
+    vec3.add(cameraLook, cameraPos, this.camera.front);
     let viewMat = mat4.create();
-    mat4.lookAt(viewMat, this.camera.pos, cameraLook, this.camera.up);
+    mat4.lookAt(viewMat, cameraPos, cameraLook, this.camera.up);
     let vpMat = mat4.create();
     mat4.multiply(vpMat, projectionMat, viewMat);
     // Do OpenGL stuff from now on
