@@ -28,9 +28,9 @@ export default class RenderView3D {
       alert('This browser does not support WebGL :(');
       throw new Error('WebGL unsupported');
     }
-    this.store = store;
+    /*this.store = store;
     this.entities = store.systems.family.get(['pos', 'render']).entities;
-    store.subscribe('all', this.render.bind(this));
+    store.subscribe('all', this.render.bind(this));*/
     this.mouseX = 0;
     this.mouseY = 0;
     this.pitch = 0;
@@ -40,6 +40,8 @@ export default class RenderView3D {
     this.objects = [];
     this.bobbing = 0;
     this.bobbingMod = 0;
+    this.score = 0;
+    this.maxScore = 0;
   }
   clearEvents() {
 
@@ -80,7 +82,7 @@ export default class RenderView3D {
     const gl = this.gl;
     if (!gl) return;
     gl.viewport(0, 0, this.canvas.width, this.canvas.height);
-    this.render();
+    this.render(0);
   }
   // OpenGL init point
   init() {
@@ -377,6 +379,7 @@ export default class RenderView3D {
       this.camera.pos[1] = -6;
       this.camera.pos[2] = 0;
     }
+    this.score = 0;
     for (let i = 0; i < this.objects.length; ++i) {
       let object = this.objects[i];
       if (this.camera.pos[1] - 1.5 > object[1] - 1 &&
@@ -390,7 +393,11 @@ export default class RenderView3D {
         this.cameraVelY = 0;
         this.cameraGround = 1;
       }
+      if (this.camera.pos[1] - 1.5 > object[1]) {
+        this.score = i;
+      }
     }
+    if (this.score > this.maxScore) this.maxScore = this.score;
     if (this.objects.length < 20 ||
       this.objects[this.objects.length-20][1] < this.camera.pos[1]
     ) {

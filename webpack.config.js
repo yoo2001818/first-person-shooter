@@ -4,7 +4,7 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   context: __dirname,
-  entry: './src/client.js',
+  entry: './src/client-game.js',
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'bundle.js',
@@ -22,7 +22,8 @@ module.exports = {
       {
         test: /\.jsx?$/i,
         exclude: /(node_modules|bower_components)/,
-        loader: 'react-hot!babel'
+        // loader: 'react-hot!babel'
+        loader: 'babel'
       },
       {
         test: /\.json$/i,
