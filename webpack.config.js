@@ -4,7 +4,7 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   context: __dirname,
-  entry: './src/client-game.js',
+  entry: './src/client.js',
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'bundle.js',
@@ -34,7 +34,7 @@ module.exports = {
         loader: 'html'
       },
       {
-        test: /(\.vert$|\.frag$)/i,
+        test: /(\.vert|\.frag|\.obj|\.mtl)$/i,
         loader: 'raw'
       },
       {

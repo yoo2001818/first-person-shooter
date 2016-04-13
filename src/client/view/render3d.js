@@ -14,6 +14,7 @@ import Texture from '../3d/texture';
 import CubeTexture from '../3d/cubeTexture';
 import Light from '../3d/light';
 import Context from '../3d/context';
+import ObjLoader from '../3d/objLoader';
 
 export default class RenderView3D {
   constructor(store, canvas) {
@@ -200,12 +201,15 @@ export default class RenderView3D {
       shininess: 30
     });
     this.material3 = material3;
-    this.materials = [material2, material3, new PhongMaterial(gl, {
+
+    let goldMaterial = new PhongMaterial(gl, {
       ambient: new Float32Array([0.24275 / 0.2, 0.1995 / 0.2, 0.0745 / 0.2]),
       diffuse: new Float32Array([0.75164, 0.60648, 0.22648]),
       specular: new Float32Array([0.628281, 0.555802, 0.366065]),
       shininess: 51.2
-    })];
+    });
+
+    this.materials = [material2, material3, goldMaterial];
     // let mesh = new Mesh(geometry, material);
     // container.appendChild(mesh);
     this.prevPos = [0, -9, 0];
@@ -235,6 +239,11 @@ export default class RenderView3D {
     let skybox = new SkyboxMesh(skyboxGeom, skyboxMaterial);
     container.appendChild(skybox);
 
+    let testObj = ObjLoader.load(gl, require('../asset/model.obj'));
+    testObj.load();
+    let testMesh = new Mesh(testObj, goldMaterial);
+    mat4.translate(testMesh.matrix, testMesh.matrix, [0, -7.5, 0]);
+    container.appendChild(testMesh);
   }
   generateMap() {
     const { gl } = this;
