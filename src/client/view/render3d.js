@@ -239,10 +239,21 @@ export default class RenderView3D {
     let skybox = new SkyboxMesh(skyboxGeom, skyboxMaterial);
     container.appendChild(skybox);
 
+    let testTex = Texture.fromImage(gl, require('../asset/texture3.png'));
+    let testNormalTex = Texture.fromImage(gl,
+      require('../asset/texture3_normal.png'));
+    let testMaterial = new PhongMaterial(gl, {
+      diffuseMap: testTex,
+      normalMap: testNormalTex,
+      specular: new Float32Array([0.628281, 0.555802, 0.566065]),
+      shininess: 30
+    });
+
     let testObj = ObjLoader.load(gl, require('../asset/model.obj'));
     testObj.load();
-    let testMesh = new Mesh(testObj, goldMaterial);
+    let testMesh = new Mesh(testObj, testMaterial);
     mat4.translate(testMesh.matrix, testMesh.matrix, [0, -7.5, 0]);
+    mat4.scale(testMesh.matrix, testMesh.matrix, [6, 6, 6]);
     container.appendChild(testMesh);
   }
   generateMap() {
