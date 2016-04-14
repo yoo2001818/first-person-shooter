@@ -313,7 +313,7 @@ export default class RenderView3D {
   render(delta) {
     const gl = this.gl;
     if (!gl) return;
-    if (!document.pointerLockElement && !document.mozPointerLockElement) {
+    if (!this.canvas.requestPointerLock && !this.canvas.mozRequestPointerLock) {
       if (Math.abs(this.mouseY) > 10) {
         this.pitch = Math.max(-Math.PI / 2 + 0.001, Math.min(Math.PI / 2
           - 0.001, this.pitch - Math.sin(this.mouseY / 4000)));
