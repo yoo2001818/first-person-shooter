@@ -1,50 +1,54 @@
 # Components
 This document lists components need by the game.
 
-## position
-Position component, Also known as transform component, stores the
-axis aligned bounding box (AABB) of the entity.
-It stores two Vectors, one for position, and one for width / height.
+## transform
+Transform component. Stores basic transformation data which belongs to a
+4x4 matrix.
 
-![Position component](./positionComp.png)
+- position: Vector3. Defaults to (0, 0, 0).
+- rotation: Quaternion4. Defaults to (1, 0, 0, 0).
+- scale: Vector3. Defaults to (1, 1, 1).
 
-- translate: Vector2D - Stores the base position of the entity.
-- scale: Vector2D - Stores half the size of the entity, Which is
-`sqrt(2) * radius`, `(radius, radius)` for a circle.
-- rotation: Number - Probably won't be implemented.
-- type: Enum - Type of the geometry object.  
+The game engine uses right handed coordinate system because it's built upon
+OpenGL.
 
-## collision
-Collision component. Makes the component colide with other entities.
+## mesh
+Enables 3D mesh rendering for this entity. Geometry and material are specified,
+however this can be changed if instancing or multiple material per single
+geometry is implemented.
 
-- weight: Number - Weight of the entity.
-- knockback: boolean - Sets whether if the entity should update its position
-  to avoid collision with the other entity. If this is false, the entity will
-  just pass through the other entity, which is OK for bullets, etc.
+- geometry: String. Specifies geometry ID from the repository.
+- material: String. Specifies material ID from the repository.
+- instance: int. Specifies instancing container's ID.
+  If specified, renderer uses instancing for this entity. **Unimplemented**
 
-## velocity
-Velocity component. Stores the current velocity of the entity.
+## light
+Marks the entity to emit a light. Point and spot lights require transform
+component, however ambient and directional lights don't.
 
-## gravity
-Gravity component. Enables velocity reduction. To support both velocity
-reduction and gravity, this uses 2*3 matrix for computing new velocity value,
-which is:
-```
-x y c | x
-x y c | y
-0 0 1 | c
-```
-The last row is always `[0, 0, 1]`, since constant value doesn't change at all.
+- type: String. Specifies the type of the light. Can be one of: `point`, `spot`,
+  `ambient`, `directional`.
+- position: Vector3. Light's position relative to model position.
+- direction: Vector3. Light's direction.
+- angle: Vector2. Spot light's angle. one is for lower bound, and one is for
+  upper bound.
+- attenuation: Number. Light's attenuation, following inverse-square law.
+- ambient: Vector3. Ambient light color.
+- diffuse: Vector3. Diffuse light color.
+- specular: Vector3. Specular light color.
 
-- matrix: Matrix3x2 - the transformation matrix.
+## camera
+Marks the entity to use as a camera. Camera objects can be linked to the
+rendering system to use as a viewport camera.
 
-## render
-Render component. Stores the rendering information.
-
-- color: Number - Color of the entity used in editor mode.
-- texture: String - Texture of the entity used in playing mode.
-- uv: Float32Array - UV map of the entity. Probably won't be implemented.
-- type: 'wall' | 'floor' | 'ceil' - The render type of the entity.
+- transform: Matrix4. Camera's position relative to model position. If
+  unspecified, identity matrix will be used.
+- type: String. Specifies the projection type of the camera. Can be one of:
+  `orthographic`, `perspective`.
+- near: Number. Near bound of the frustum.
+- far: Number. Far bound of the frustum.
+- fov: Number. Vertical field of view value in radians. (Perspective)
+- scale: Number. Vertical scale of the camera. (Orthographic)
 
 ## name
 Name component. Stores the name for debugging, etc.
