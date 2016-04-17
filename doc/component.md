@@ -1,5 +1,5 @@
 # Components
-This document lists components need by the game.
+This document lists components needed by the game.
 
 ## transform
 Transform component. Stores basic transformation data which belongs to a
@@ -12,6 +12,16 @@ Transform component. Stores basic transformation data which belongs to a
 The game engine uses right handed coordinate system because it's built upon
 OpenGL.
 
+- transform/setPosition
+- transform/setRotation
+- transform/setScale
+- transform/addPosition
+- transform/addRotation
+
+- TransformController
+
+- TransformMatrixSystem
+
 ## mesh
 Enables 3D mesh rendering for this entity. Geometry and material are specified,
 however this can be changed if instancing or multiple material per single
@@ -21,6 +31,8 @@ geometry is implemented.
 - material: String. Specifies material ID from the repository.
 - instance: int. Specifies instancing container's ID.
   If specified, renderer uses instancing for this entity. **Unimplemented**
+
+- Render3DSystem
 
 ## light
 Marks the entity to emit a light. Point and spot lights require transform
@@ -37,6 +49,8 @@ component, however ambient and directional lights don't.
 - diffuse: Vector3. Diffuse light color.
 - specular: Vector3. Specular light color.
 
+- Render3DSystem
+
 ## camera
 Marks the entity to use as a camera. Camera objects can be linked to the
 rendering system to use as a viewport camera.
@@ -49,6 +63,45 @@ rendering system to use as a viewport camera.
 - far: Number. Far bound of the frustum.
 - fov: Number. Vertical field of view value in radians. (Perspective)
 - scale: Number. Vertical scale of the camera. (Orthographic)
+
+- Render3DSystem
+
+## velocity
+Velocity component.
+
+- velocity/set
+- velocity/add
+
+- VelocityController
+
+- VelocitySystem
+
+## collision
+Collision component. Specifies entity's collision area.
+
+- CollisionController
+
+- CollisionSystem
+
+## hierarchy
+Enables entity hierarchy. Currently don't have a purpose, however it'll be
+useful later.
+
+- parent: int. Specifies the parent's entity ID.
+
+- HierarchyController
+
+- HierarchySystem
+
+## player
+
+## controller
+
+## physics
+
+## gravity
+
+## respawn
 
 ## name
 Name component. Stores the name for debugging, etc.
