@@ -44,6 +44,12 @@
         overflow: auto;
       }
     }
+    &.unspecified > .content {
+      text-align: center;
+      font-size: 0.9em;
+      color: $grey-600;
+      margin: 0.3em 0;
+    }
     &.overview > .content {
       display: table;
       line-height: 2em;

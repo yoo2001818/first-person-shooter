@@ -1,7 +1,6 @@
 import * as engineActions from '../action/engine';
 import * as ECSChanges from 'ecsalator/lib/ecs/changes';
-import * as GeometryType from '../util/geometryType';
-import { Vector } from 'kollision';
+import { vec3 as Vec3, quat as Quat } from 'gl-matrix';
 
 // A system doing various testing chores.
 export default class DebugSystem {
@@ -10,74 +9,45 @@ export default class DebugSystem {
     store.actions.on(engineActions.INIT, () => {
       store.changes.push(ECSChanges.entityCreate(undefined, {
         name: 'Character',
-        pos: {
-          translate: Vector.create(100, 50),
-          scale: Vector.create(50, 50),
-          type: GeometryType.CIRCLE
+        transform: {
+          position: Vec3.create(),
+          rotation: Quat.create(),
+          scale: Vec3.set(Vec3.create(), 1, 1, 1)
         },
-        vel: Vector.create(1, 0),
-        collision: {
-
-        },
-        render: {
-          color: '#000000'
-        }
-        // cursor: {}
-      }));
-      store.changes.push(ECSChanges.entityCreate(undefined, {
-        name: 'Line 1',
-        pos: {
-          translate: Vector.create(-100, 150),
-          scale: Vector.create(100, 0),
-          type: GeometryType.LINE
-        },
-        collision: {
-
-        },
-        render: {
-          color: '#0000ff'
+        velocity: Vec3.create(),
+        mesh: {
+          geometry: 'Box',
+          material: 'Test'
         }
       }));
       store.changes.push(ECSChanges.entityCreate(undefined, {
-        name: 'Line 2',
-        pos: {
-          translate: Vector.create(-200, -100),
-          scale: Vector.create(0, 100),
-          type: GeometryType.LINE
+        name: 'Light',
+        transform: {
+          position: Vec3.set(Vec3.create(), 0, 10, 0),
+          rotation: Quat.rotateY(Quat.create(), Quat.create(), Math.PI / 2)
         },
-        collision: {
-
-        },
-        render: {
-          color: '#0000ff'
+        light: {
+          type: 'spot',
+          position: Vec3.create(),
+          direction: Vec3.set(Vec3.create(), 1, 0, 0),
+          angle: new Float32Array([27.5, 45]),
+          attenuation: 0.045,
+          ambient: new Float32Array([0.2, 0.2, 0.2]),
+          diffuse: new Float32Array([1, 1, 1]),
+          specular: new Float32Array([1, 1, 1])
         }
       }));
       store.changes.push(ECSChanges.entityCreate(undefined, {
-        name: 'Line 3',
-        pos: {
-          translate: Vector.create(200, 10),
-          scale: Vector.create(200, 100),
-          type: GeometryType.LINE
+        name: 'Camera',
+        transform: {
+          position: Vec3.set(Vec3.create(), 0, 0, 10),
+          rotation: Quat.rotateZ(Quat.create(), Quat.create(), -Math.PI / 2)
         },
-        collision: {
-
-        },
-        render: {
-          color: '#0000ff'
-        }
-      }));
-      store.changes.push(ECSChanges.entityCreate(undefined, {
-        name: 'Line 4',
-        pos: {
-          translate: Vector.create(100, -290),
-          scale: Vector.create(-100, 200),
-          type: GeometryType.LINE
-        },
-        collision: {
-
-        },
-        render: {
-          color: '#0000ff'
+        camera: {
+          type: 'perspective',
+          near: 0.03,
+          far: 1000,
+          fov: 60 / 180 * Math.PI
         }
       }));
     });

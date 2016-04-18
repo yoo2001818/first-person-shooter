@@ -22,8 +22,8 @@ module.exports = {
       {
         test: /\.jsx?$/i,
         exclude: /(node_modules|bower_components)/,
-        // loader: 'react-hot!babel'
-        loader: 'babel'
+        loader: 'react-hot!babel'
+        // loader: 'babel'
       },
       {
         test: /\.json$/i,

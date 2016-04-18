@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 
 import OverviewPanel from './inspector/overview';
+import DefaultFallbackPanel from './inspector/defaultFallback';
 import inspectors from './inspector';
 
 import Panel from './inspector/panel';
@@ -12,12 +13,13 @@ export default class EntityInspector extends Component {
       <div className='entity-inspector'>
         <OverviewPanel entity={entity} onEdit={onEdit} />
         { Object.keys(entity).map(key => {
-          if (inspectors[key] == null) return null;
           let KeyPanel = inspectors[key];
+          if (KeyPanel === undefined) KeyPanel = DefaultFallbackPanel;
+          if (KeyPanel == null) return false;
           return (
-            <KeyPanel entity={entity} onEdit={onEdit} key={key} />
+            <KeyPanel entity={entity} onEdit={onEdit} key={key} name={key} />
           );
-        }).filter(a => a != null) }
+        }) }
         <Panel header='JSON representation'>
           <code><pre>
             { JSON.stringify(entity, (key, value) => {

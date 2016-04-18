@@ -9,10 +9,11 @@ import TransformController from '../controller/transform';
 import VelocityController from '../controller/velocity';
 import EditorController from '../controller/editor';
 
-// import DebugSystem from '../system/debug';
+import DebugSystem from '../system/debug';
 // import VelSystem from '../system/vel';
 // import CollisionSystem from '../system/collision';
 // import CursorSystem from '../system/cursor';
+import MatrixSystem from '../system/matrix';
 import EditorSystem from '../system/editor';
 
 // Configure game store object
@@ -25,10 +26,11 @@ export default function createStore() {
   factory.addController('editor', EditorController);
   // Add system
   factory.addSystem('family', FamilySystem);
-  // factory.addSystem('debug', DebugSystem);
+  factory.addSystem('debug', DebugSystem);
   // factory.addSystem('vel', VelSystem);
   // factory.addSystem('collision', CollisionSystem);
   // factory.addSystem('cursor', CursorSystem);
+  factory.addSystem('matrix', MatrixSystem);
   factory.addSystem('editor', EditorSystem);
   // Add middleware
   // factory.addMiddleware(logger);

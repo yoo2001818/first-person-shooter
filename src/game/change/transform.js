@@ -9,8 +9,8 @@ export const SET_SCALE = 'transform/setScale';
 export const ADD_POSITION = 'transform/addPosition';
 export const ADD_ROTATION = 'transform/addRotation';
 
-export const set = createChange(SET, (entity, position, rotation, scale) => ({
-  entity, props: { position, rotation, scale }
+export const set = createChange(SET, (entity, props) => ({
+  entity, props
 }));
 
 export const setPosition = createChange(SET_POSITION, (entity, vec) => ({

@@ -24,7 +24,8 @@ const TransformController = {
           newValue.scale = Vec3.create();
           Vec3.set(newValue.scale, 1, 1, 1);
         }
-        store.changes.unshift(ECSChanges.set(entity, 'transform', newValue));
+        store.changes.unshift(
+          TransformChanges.set(entity, newValue));
         return;
       }
       // Pass it to TransformChanges if it matches criteria.
@@ -32,6 +33,7 @@ const TransformController = {
     });
   },
   [TransformChanges.SET](event, store) {
+    const { entity, props } = event.data;
     // Notify other controllers sub-changes.... TODO is it required?
     store.changes.unshift(
       ignore(TransformChanges.setPosition(entity, props.position)));
@@ -40,7 +42,6 @@ const TransformController = {
     store.changes.unshift(
       ignore(TransformChanges.setScale(entity, props.scale)));
     if (event.ignore) return;
-    const { entity, props } = event.data;
     entity.transform = props;
   },
   [TransformChanges.SET_POSITION](event) {
