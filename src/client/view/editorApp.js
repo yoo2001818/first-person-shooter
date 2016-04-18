@@ -73,6 +73,7 @@ export default class EditorApp extends Component {
                   <EntityInspector
                     entity={store.state.entities[editor.selectedEntity]}
                     onEdit={this.handleEdit.bind(this)}
+                    store={store}
                     />
                 )}
               </TabPanel>

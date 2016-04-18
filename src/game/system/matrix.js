@@ -82,4 +82,7 @@ export default class MatrixSystem {
   get(entityId) {
     return this.matrices[entityId];
   }
+  getInverse(entityId) {
+    return this.inverseMatrices[entityId];
+  }
 }

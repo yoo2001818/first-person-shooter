@@ -57,7 +57,7 @@ const TransformController = {
   [TransformChanges.SET_SCALE](event) {
     if (event.ignore) return;
     const { entity, vec } = event.data;
-    Vec3.copy(entity.transform.position, vec);
+    Vec3.copy(entity.transform.scale, vec);
   },
   [TransformChanges.ADD_POSITION](event) {
     const { entity, vec } = event.data;

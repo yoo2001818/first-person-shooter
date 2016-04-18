@@ -1,22 +1,23 @@
 import React, { Component, PropTypes } from 'react';
 
-import * as velChanges from '../../../game/change/vel';
+import * as VelocityChanges from '../../../game/change/velocity';
 
 import Panel from './panel';
 import Field from '../ui/field';
-import VectorInput from '../ui/vectorInput';
+import Vec3Input from '../ui/vec3Input';
 
 export default class VelocityPanel extends Component {
   handleEdit(event) {
     if (!this.props.onEdit) return;
-    this.props.onEdit(velChanges.set(this.props.entity, event.target.value));
+    this.props.onEdit(VelocityChanges.set(
+      this.props.entity, event.target.value));
   }
   render() {
     const { entity } = this.props;
     return (
       <Panel header='Velocity'>
         <Field field='Velocity'>
-          <VectorInput value={ entity.vel }
+          <Vec3Input value={ entity.velocity }
             onChange={this.handleEdit.bind(this)}
           />
         </Field>
