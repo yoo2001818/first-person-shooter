@@ -3,8 +3,8 @@ import DropDown from './dropDown';
 
 export default class SelectInput extends Component {
   handleSelect(id) {
-    if (this.props.onSelect) {
-      this.props.onSelect({
+    if (this.props.onChange) {
+      this.props.onChange({
         target: {
           value: this.props.values[id]
         }
@@ -29,7 +29,7 @@ export default class SelectInput extends Component {
 
 SelectInput.propTypes = {
   value: PropTypes.any,
-  onSelect: PropTypes.func,
+  onChange: PropTypes.func,
   keys: PropTypes.array,
   values: PropTypes.array
 };

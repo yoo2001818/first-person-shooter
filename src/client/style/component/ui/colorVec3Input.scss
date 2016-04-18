@@ -1,0 +1,21 @@
+.color-vec3-input-component {
+  & > .color-input-component {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    color: $grey-800;
+    background: 0;
+    padding: 0 0.5em;
+    line-height: 2em;
+    margin: 0;
+    border-radius: 3px;
+    border: none;
+    &:hover {
+      color: $grey-700;
+    }
+    &:focus {
+      background-color: $blue-200;
+      color: $blue-800;
+    }
+  }
+}

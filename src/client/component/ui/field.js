@@ -6,7 +6,11 @@ export default class Field extends Component {
     return (
       <div className='field-component'>
         <span className='field'>
-          { field }
+          <span className='field-table'>
+            <span className='field-cell'>
+              { field }
+            </span>
+          </span>
         </span>
         <span className='content'>
           { children }

@@ -15,7 +15,7 @@
       color: $grey-800;
     }
     & > .content {
-      input.input {
+      input.input, .number-input-component input {
         display: inline-block;
         width: 100%;
         box-sizing: border-box;
@@ -30,6 +30,13 @@
           height: 1em;
           line-height: 1em;
           vertical-align: middle;
+        }
+        &:hover {
+          color: $grey-700;
+        }
+        &:focus {
+          background-color: $blue-200;
+          color: $blue-800;
         }
       }
       code {

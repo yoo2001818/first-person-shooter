@@ -35,7 +35,7 @@ export default class NumberInput extends Component {
     return (
       <div className='number-input-component'>
         <input
-          type='number' step='any' value={ focused ? editValue : value }
+          type='number' step='any' value={ focused ? editValue : (value || 0) }
           onChange={this.handleChange.bind(this)}
           onFocus={this.handleFocus.bind(this)}
           onBlur={this.handleBlur.bind(this)}

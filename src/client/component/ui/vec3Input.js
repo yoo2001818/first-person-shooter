@@ -6,7 +6,7 @@ import NumberInput from './numberInput';
 export default class Vec3Input extends Component {
   handleChange(pos, e) {
     let vec = Vec3.create();
-    Vec3.copy(vec, this.props.value);
+    if (this.props.value) Vec3.copy(vec, this.props.value);
     vec[pos] = parseFloat(e.target.value);
     if (this.props.onChange) {
       this.props.onChange({
@@ -20,13 +20,13 @@ export default class Vec3Input extends Component {
     const { value } = this.props;
     return (
       <div className='vec3-input-component'>
-        <NumberInput value={ value[0].toFixed(3) }
+        <NumberInput value={ value && value[0].toFixed(3) }
           onChange={this.handleChange.bind(this, 0)}
         />
-        <NumberInput value={ value[1].toFixed(3) }
+        <NumberInput value={ value && value[1].toFixed(3) }
           onChange={this.handleChange.bind(this, 1)}
         />
-        <NumberInput value={ value[2].toFixed(3) }
+        <NumberInput value={ value && value[2].toFixed(3) }
           onChange={this.handleChange.bind(this, 2)}
         />
       </div>
