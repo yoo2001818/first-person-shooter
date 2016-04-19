@@ -6,7 +6,7 @@ import Grid from '../3d/util/grid';
 import Light from '../3d/light';
 
 import BoxGeometry from '../3d/geom/boxGeometry';
-import PhongMaterial from '../3d/material/phongMaterial';
+import SolidMaterial from '../3d/material/solidMaterial';
 import Mesh from '../3d/mesh';
 
 export default class RenderView3D {
@@ -78,11 +78,12 @@ export default class RenderView3D {
     light.position = vec4.create();
     vec4.set(light.position, 10, 10, 0, 0);
 
-    let material = new PhongMaterial(gl, {
-      ambient: new Float32Array([0.24275 / 0.2, 0.1995 / 0.2, 0.0745 / 0.2]),
-      diffuse: new Float32Array([0.75164, 0.60648, 0.22648]),
-      specular: new Float32Array([0.628281, 0.555802, 0.366065]),
-      shininess: 51.2
+    let material = new SolidMaterial(gl, {
+      specular: new Float32Array([1, 1, 1]),
+      diffuse: new Float32Array([158 / 255, 158 / 255, 166 / 255]),
+      ambient: new Float32Array([88 / 255, 88 / 255, 88 / 255]),
+      reflection: new Float32Array([140 / 255, 140 / 255, 170 / 255]),
+      shininess: 14.0
     });
     let boxGeometry = new BoxGeometry(gl);
     boxGeometry.load();

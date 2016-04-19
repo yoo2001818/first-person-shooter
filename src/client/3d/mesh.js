@@ -18,6 +18,16 @@ export default class Mesh extends Object3D {
       mvpMatrix);
     gl.uniformMatrix4fv(this.material.shader.model, false,
       this.globalMatrix);
+    if (this.material.shader.view !== -1) {
+      gl.uniformMatrix4fv(this.material.shader.view, false,
+        context.vMatrix);
+    }
+    if (this.material.shader.viewInv !== -1) {
+      let invMat = mat4.create();
+      mat4.invert(invMat, context.vMatrix);
+      gl.uniformMatrix4fv(this.material.shader.viewInv, false,
+        invMat);
+    }
     if (this.material.shader.modelInvTransp !== -1) {
       let invMat = mat3.create();
       mat3.normalFromMat4(invMat, this.globalMatrix);

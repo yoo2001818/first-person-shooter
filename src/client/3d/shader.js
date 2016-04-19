@@ -77,6 +77,8 @@ export default class Shader {
     this.tangents = this.getAttrib('aTangent');
 
     this.transform = this.getUniform('uTransform');
+    this.view = this.getUniform('uView');
+    this.viewInv = this.getUniform('uViewInv');
     this.model = this.getUniform('uModel');
     this.modelInvTransp = this.getUniform('uModelInvTransp');
 
