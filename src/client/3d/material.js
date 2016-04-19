@@ -5,7 +5,7 @@ export default class Material {
   }
   use(geometry) {
     this.shader.use();
-    geometry.use(this.shader);
+    if (geometry) geometry.use(this.shader);
     // Child classes will set the uniforms, etc.
   }
 }

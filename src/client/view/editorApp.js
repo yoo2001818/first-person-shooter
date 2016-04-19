@@ -59,9 +59,6 @@ export default class EditorApp extends Component {
           <div className='pane-component pane-center viewport'>
             <TabBox>
               <TabPanel title='Editor'>
-                {/* <Viewport store={store} /> */}
-              </TabPanel>
-              <TabPanel title='3D Viewer'>
                 <Viewer3D store={store} />
               </TabPanel>
             </TabBox>

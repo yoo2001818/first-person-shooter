@@ -1,44 +1,45 @@
-import Material from './material';
-import Shader from './shader';
+import Material from '../material';
+import Shader from '../shader';
 
-let PHONG_SHADER;
+const PHONG_SHADER = new WeakMap();
 
 export default class PhongMaterial extends Material {
   constructor(context, options) {
-    if (PHONG_SHADER == null) {
-      PHONG_SHADER = new Shader(context);
-      PHONG_SHADER.loadVertexShader(require('../shader/phong.vert'));
-      PHONG_SHADER.loadFragmentShader(require('../shader/phong.frag'));
-      PHONG_SHADER.link();
-      PHONG_SHADER.viewPos = PHONG_SHADER.getUniform('uViewPos');
-      PHONG_SHADER.useNormalMap = PHONG_SHADER.getUniform('uUseNormalMap');
-      PHONG_SHADER.depthMapScale = PHONG_SHADER.getUniform('uDepthMapScale');
-      PHONG_SHADER.lightSize = PHONG_SHADER.getUniform('uLightSize');
-      PHONG_SHADER.lights = [];
+    if (!PHONG_SHADER.has(context)) {
+      let shader = new Shader(context);
+      shader.loadVertexShader(require('../../shader/phong.vert'));
+      shader.loadFragmentShader(require('../../shader/phong.frag'));
+      shader.link();
+      shader.viewPos = shader.getUniform('uViewPos');
+      shader.useNormalMap = shader.getUniform('uUseNormalMap');
+      shader.depthMapScale = shader.getUniform('uDepthMapScale');
+      shader.lightSize = shader.getUniform('uLightSize');
+      shader.lights = [];
       for (let i = 0; i < 8; ++i) {
         let lightName = 'uLight[' + i + '].';
-        PHONG_SHADER.lights.push({
-          position: PHONG_SHADER.getUniform(lightName + 'position'),
-          ambient: PHONG_SHADER.getUniform(lightName + 'ambient'),
-          diffuse: PHONG_SHADER.getUniform(lightName + 'diffuse'),
-          specular: PHONG_SHADER.getUniform(lightName + 'specular'),
-          attenuation: PHONG_SHADER.getUniform(lightName + 'attenuation'),
-          coneDirection: PHONG_SHADER.getUniform(lightName + 'coneDirection'),
-          coneCutOff: PHONG_SHADER.getUniform(lightName + 'coneCutOff')
+        shader.lights.push({
+          position: shader.getUniform(lightName + 'position'),
+          ambient: shader.getUniform(lightName + 'ambient'),
+          diffuse: shader.getUniform(lightName + 'diffuse'),
+          specular: shader.getUniform(lightName + 'specular'),
+          attenuation: shader.getUniform(lightName + 'attenuation'),
+          coneDirection: shader.getUniform(lightName + 'coneDirection'),
+          coneCutOff: shader.getUniform(lightName + 'coneCutOff')
         });
       }
-      PHONG_SHADER.material = {
-        ambient: PHONG_SHADER.getUniform('uMaterial.ambient'),
-        diffuse: PHONG_SHADER.getUniform('uMaterial.diffuse'),
-        specular: PHONG_SHADER.getUniform('uMaterial.specular'),
-        shininess: PHONG_SHADER.getUniform('uMaterial.shininess')
+      shader.material = {
+        ambient: shader.getUniform('uMaterial.ambient'),
+        diffuse: shader.getUniform('uMaterial.diffuse'),
+        specular: shader.getUniform('uMaterial.specular'),
+        shininess: shader.getUniform('uMaterial.shininess')
       };
-      PHONG_SHADER.diffuseMap = PHONG_SHADER.getUniform('uDiffuseMap');
-      PHONG_SHADER.specularMap = PHONG_SHADER.getUniform('uSpecularMap');
-      PHONG_SHADER.normalMap = PHONG_SHADER.getUniform('uNormalMap');
-      PHONG_SHADER.depthMap = PHONG_SHADER.getUniform('uDepthMap');
+      shader.diffuseMap = shader.getUniform('uDiffuseMap');
+      shader.specularMap = shader.getUniform('uSpecularMap');
+      shader.normalMap = shader.getUniform('uNormalMap');
+      shader.depthMap = shader.getUniform('uDepthMap');
+      PHONG_SHADER.set(context, shader);
     }
-    super(context, PHONG_SHADER);
+    super(context, PHONG_SHADER.get(context));
     this.options = options;
   }
   use(geometry, context) {

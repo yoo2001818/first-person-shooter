@@ -1,4 +1,4 @@
-import Mesh from './mesh';
+import Mesh from '../mesh';
 import { mat4 } from 'gl-matrix';
 
 export default class SkyboxMesh extends Mesh {

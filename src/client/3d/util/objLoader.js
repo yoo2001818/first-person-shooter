@@ -1,4 +1,4 @@
-import Geometry from './geometry';
+import Geometry from '../geometry';
 import { vec2, vec3 } from 'gl-matrix';
 
 function applyVec3(dest, orig, pos) {

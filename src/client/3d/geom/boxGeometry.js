@@ -1,5 +1,5 @@
 import { vec2, vec3 } from 'gl-matrix';
-import Geometry from './geometry';
+import Geometry from '../geometry';
 
 export default class BoxGeometry extends Geometry {
   constructor(context) {
