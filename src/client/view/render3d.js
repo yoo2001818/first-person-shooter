@@ -5,7 +5,8 @@ import Grid from '../3d/util/grid';
 
 import Light from '../3d/light';
 
-import BoxGeometry from '../3d/geom/boxGeometry';
+import ObjLoader from '../3d/util/objLoader';
+// import BoxGeometry from '../3d/geom/boxGeometry';
 import SolidMaterial from '../3d/material/solidMaterial';
 import Mesh from '../3d/mesh';
 
@@ -79,16 +80,19 @@ export default class RenderView3D {
     vec4.set(light.position, 10, 10, 0, 0);
 
     let material = new SolidMaterial(gl, {
-      specular: new Float32Array([1, 1, 1]),
+      specular: new Float32Array([0.3, 0.3, 0.3]),
       diffuse: new Float32Array([158 / 255, 158 / 255, 166 / 255]),
       ambient: new Float32Array([88 / 255, 88 / 255, 88 / 255]),
       reflection: new Float32Array([140 / 255, 140 / 255, 170 / 255]),
       shininess: 14.0
     });
-    let boxGeometry = new BoxGeometry(gl);
+    // let boxGeometry = new BoxGeometry(gl);
+    let boxGeometry = ObjLoader.load(gl, require('../asset/model2.obj'));
     boxGeometry.load();
     let cube = new Mesh(boxGeometry, material);
+    mat4.scale(cube.matrix, cube.matrix, [3, 3, 3]);
     container.appendChild(cube);
+    this.cube = cube;
   }
   // OpenGL render point
   render() {
@@ -96,7 +100,7 @@ export default class RenderView3D {
     if (!gl) return;
     this.camera.pos = new Float32Array([
       Math.cos(Date.now() / 1000) * 6,
-      4,
+      Math.cos(Date.now() / 1500) * 6,
       Math.sin(Date.now() / 1000) * 6
     ]);
     // Calculate camera vectors
