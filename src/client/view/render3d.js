@@ -5,8 +5,8 @@ import Grid from '../3d/util/grid';
 
 import Light from '../3d/light';
 
-import ObjLoader from '../3d/util/objLoader';
-// import BoxGeometry from '../3d/geom/boxGeometry';
+// import ObjLoader from '../3d/util/objLoader';
+import BoxGeometry from '../3d/geom/boxGeometry';
 import SolidMaterial from '../3d/material/solidMaterial';
 import Mesh from '../3d/mesh';
 
@@ -14,7 +14,7 @@ export default class RenderView3D {
   constructor(store, canvas) {
     this.canvas = canvas;
     try {
-      this.gl = canvas.getContext('webgl') ||
+      this.gl = canvas.getContext('webgl', { antialias: false }) ||
         canvas.getContext('experimental-webgl');
     } catch (e) {
       console.log(e);
@@ -86,11 +86,11 @@ export default class RenderView3D {
       reflection: new Float32Array([140 / 255, 140 / 255, 170 / 255]),
       shininess: 14.0
     });
-    // let boxGeometry = new BoxGeometry(gl);
-    let boxGeometry = ObjLoader.load(gl, require('../asset/model2.obj'));
+    let boxGeometry = new BoxGeometry(gl);
+    // let boxGeometry = ObjLoader.load(gl, require('../asset/model2.obj'));
     boxGeometry.load();
     let cube = new Mesh(boxGeometry, material);
-    mat4.scale(cube.matrix, cube.matrix, [3, 3, 3]);
+    // mat4.scale(cube.matrix, cube.matrix, [3, 3, 3]);
     container.appendChild(cube);
     this.cube = cube;
   }
