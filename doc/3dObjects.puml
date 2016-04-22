@@ -1,0 +1,68 @@
+@startuml
+
+class RenderContext {
+  gl: WebGLRenderingContext
+  sharedAttributes: Object<String, uint>
+  shaders: Object<String, Shader>
+}
+
+class Shader {
+  context: RenderContext
+  vertexShader: WebGLShader
+  fragmentShader: WebGLShader
+  program: WebGLProgram
+  isShared: Boolean
+  ---
+  name: String
+  attributes: Object<String, uint>
+  uniforms: Object<String, uint>
+  attributeTypes: Object<String, uint>
+  uniformTypes: Object<String, uint>
+}
+
+class Texture {
+  context: RenderContext
+  texture: WebGLTexture
+  ---
+  name: String
+}
+
+class Material {
+  shader: String | Shader
+  texture: String | Texture
+}
+
+Shader --* Material
+Texture --* Material
+
+class Geometry {
+  context: RenderContext
+  vbo: WebGLBuffer
+  vba: Object<String, WebGLBuffer>
+  ---
+  indices: Uint16Array | Uint8Array
+  type: String
+}
+
+class Transform {
+  vec3 position
+  quat rotation
+  vec3 scale
+}
+
+class Object3D {
+  Transform transform
+}
+
+Transform --o Object3D
+
+class Mesh {
+  Material material
+  Geometry geometry
+}
+
+Mesh -|> Object3D
+Geometry --* Mesh
+Material --* Mesh
+
+@enduml
