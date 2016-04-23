@@ -27,6 +27,17 @@ class Texture {
   name: String
 }
 
+class Texture2D {
+  image: HTMLImageElement
+}
+
+class TextureCube {
+  images: Array<HTMLImageElement>
+}
+
+Texture2D --|> Texture
+TextureCube --|> Texture
+
 class Material {
   shader: String | Shader
   texture: String | Texture
@@ -44,21 +55,42 @@ class Geometry {
   type: String
 }
 
+class 2DGeometry {
+  vertices: Float32Array
+  texCoords: Float32Array
+}
+
+class 3DGeometry {
+  vertices: Float32Array
+  normals: Float32Array
+  tangents: Float32Array
+  texCoords: Float32Array
+}
+
+2DGeometry --|> Geometry
+3DGeometry --|> Geometry
+
+class WireframeGeometry {
+  geometry: Geometry
+}
+
+WireframeGeometry --|> Geometry
+
 class Transform {
-  vec3 position
-  quat rotation
-  vec3 scale
+  position: Float32Array
+  rotation: Float32Array
+  scale: Float32Array
 }
 
 class Object3D {
-  Transform transform
+  transform: Transform
 }
 
 Transform --o Object3D
 
 class Mesh {
-  Material material
-  Geometry geometry
+  material: Material
+  geometry: Geometry
 }
 
 Mesh -|> Object3D
